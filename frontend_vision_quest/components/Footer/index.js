@@ -5,10 +5,10 @@ export default function Footer() {
         <footer className="bg-gray-800 text-white py-4">
             <div className="container mx-auto flex justify-between items-center">
                 <div>
-                    <h2 className="text-4xl font-bold text-white-600">Vision Quest</h2>
+                    <h2 className="text-4xl font-bold text-gray-400">Vision Quest</h2>
                 </div>
                 <div>
-                    <p className="text-xl font-bold text-white-600">Stay in touch! Join our Newsletter.</p>
+                    <p className="text-xl font-bold text-gray-400">Stay in touch! Join our Newsletter.</p>
                     <input
                         type="email"
                         placeholder="Enter your email"
