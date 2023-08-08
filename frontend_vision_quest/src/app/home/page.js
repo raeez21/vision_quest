@@ -1,5 +1,5 @@
-import Link from "next/link";
 import Header from "../../../components/Header";
+import Footer from "../../../components/Footer";
 
 export default function Page() {
     return (
@@ -23,6 +23,7 @@ export default function Page() {
             </div>
             {/* Rest of your home page content */}
           </main>
+          <Footer />
         </div>
 
       </>
