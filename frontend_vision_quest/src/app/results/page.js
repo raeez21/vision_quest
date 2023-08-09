@@ -54,11 +54,11 @@ export default function Page() {
                     <h2 className="text-3xl font-semibold mb-4">Related Products</h2>
                     <div className="flex space-x-4 justify-between mt-10">
                         {relatedProducts.map((imageUrl, index) => (
-                        <div
-                            key={index}
-                            className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                            style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}
-                        ></div>
+                            <div
+                                key={index}
+                                className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
+                                style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}
+                            ></div>
                         ))}
                     </div>
                 </div>

@@ -33,9 +33,6 @@ export default function Page() {
             <div className="mb-8">
               <h2 className="text-3xl font-semibold mb-4">Reviews</h2>
               <div className="flex space-x-4 justify-between">
-                <div>
-                  
-                </div>
                 {reviewImages.map((imageUrl, index) => (
                   <div
                     key={index}
