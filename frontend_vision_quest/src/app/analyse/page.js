@@ -1,5 +1,6 @@
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
+import Link from "next/link";
 
 export default function Page() {
     return (
@@ -68,9 +69,11 @@ export default function Page() {
                 </div>
               </div>
               <div className="mb-8 ml-96 items-center">
-                <button className="bg-slate-500 font-bold text-gray-900 px-8 py-3 rounded">
+                <Link 
+                  className="bg-slate-500 font-bold text-gray-900 px-8 py-3 rounded"
+                  href="/results">
                   GO
-                </button>
+                </Link>
               </div>
             </main>
             <Footer />
