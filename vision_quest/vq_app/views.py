@@ -1,16 +1,36 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
+from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from .serializers import UserSerializer
+from .models import Media, Jobs, ObjectResult
+import sys
+import os
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import View
+from django.core.files.storage import default_storage
+# from ..models.ssd_coco import ssd_coco
+# sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+#print("paath: ", os.getcwd())
+from models.ssd_coco.detect import detect1
+from django.conf import settings
+import datetime
+from .utils import get_related
+# Add the root directory of the project to the Python path
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models')))
 
-
-def members(request):
-    return HttpResponse("Hello world!")
+# def members(request):
+#     return HttpResponse("Hello world!")
 
 
 @api_view(['POST'])
@@ -27,11 +47,100 @@ def login(request):
     password = request.data.get('password')
     user = authenticate(username=username, password=password)
     if user is not None:
-        refresh = RefreshToken.for_user(user)
-        data = {
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-        }
-        return Response(data, status=status.HTTP_200_OK)
+        # refresh = RefreshToken.for_user(user)
+        # data = {
+        #     'refresh': str(refresh),
+        #     'access': str(refresh.access_token),
+        # }
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
+        # return Response(data, status=status.HTTP_200_OK)
     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+# @login_required
+# @permission_classes([IsAuthenticated])
+def analyze(request):
+    image_file = request.FILES.get('image')
+    if request.data.get('type') == 'image':
+        if image_file:
+            user_name = request.user.username
+            timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+            media = Media()
+            media.job = Jobs.objects.create(user=request.user, options={}, timestamp=timezone.now())
+            media.image_name = image_file.name
+            media.image_path = os.path.join(settings.MEDIA_ROOT,'input',f"{user_name}_{timestamp}_{image_file.name}")
+            media.image_size = f"{image_file.size / 1024:.2f} KB"
+            
+            media.save()
+            # media.image_path = image_file.name
+            # media.image.save(image_file.name, image_file)
+            # media.save()
+            # image_path = default_storage.url(media.image.name)
+            # print("in here image_path:",image_path)
+            image_input_path =  media.image_path#os.path.join(settings.MEDIA_ROOT, media.image_path)
+            image_output_path = os.path.join(settings.MEDIA_ROOT,'output',os.path.basename(image_input_path))
+            with open(image_input_path, 'wb') as f:
+                for chunk in image_file.chunks():
+                    f.write(chunk)
+            
+            objectInfo = detect1(image_input_path,image_output_path)
+            print("obinfo:",objectInfo)
+            objectInfo_serializable = [[bbox.tolist(), label, conf] for bbox, label,conf in objectInfo]
+            print(objectInfo)
+            response_data = {
+                    'message': 'Image analysis complete.',
+                    'result': objectInfo_serializable,  # Replace with your actual result
+                }
+            full_related_results = []
+            unique_classes = set()
+            for obj_info in objectInfo:
+                object_result = ObjectResult(
+                    job = media.job,
+                    bbox = obj_info[0].tolist(),
+                    object_class = obj_info[1],
+                    confidence_score = float(obj_info[2]),
+                    remarks = "",
+                )
+                object_result.save()
+                unique_classes.add(obj_info[1])
+            for obj_name in unique_classes:
+                if obj_name != 'person':
+                    related_results = get_related(obj_name)
+                    full_related_results.append(related_results)
+            print("full related:",full_related_results)
+            return JsonResponse(response_data)
+
+        return JsonResponse({'error': 'No image file provided.'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return JsonResponse({'error': 'Video coming soon'})
+
+# class AnalyzeView(LoginRequiredMixin, View):
+#     def post(self, request):
+#         image_file = request.FILES.get('image')
+#         job_id = request.data.get('job')
+#         print("typee",type(image_file))
+#         print("req:",request)
+#         if image_file:
+#             job = Jobs.objects.create(user=request.user, options={}, timestamp=timezone.now())
+
+#             media = Media()
+#             media.job = job
+#             media.save()
+#             image_path = default_storage.url(media.image.name)
+#             print("in here image_path:",image_path)
+#             detect1(image_path)
+#             response_data = {
+#                     'message': 'Image analysis complete.',
+#                     'result': 'Your analysis result here',  # Replace with your actual result
+#                 }
+#             return JsonResponse(response_data)
+
+#         return JsonResponse({'error': 'No image file provided.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+
 

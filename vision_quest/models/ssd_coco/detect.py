@@ -33,7 +33,7 @@ def getObjects(img, thres, nms, draw=True, objects=[]):
             className = classNames[classId - 1]
             #print("clasName",className)
             if className in objects:
-                objectInfo.append([box,className])
+                objectInfo.append([box,className, str(round(confidence*100,2))])
                 if (draw):
                     cv2.rectangle(img,box,color=(0,255,0),thickness=2)
                     cv2.putText(img,classNames[classId-1].upper(),(box[0]+10,box[1]+30),

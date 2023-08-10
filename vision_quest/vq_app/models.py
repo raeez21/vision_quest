@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 
 
 class Jobs(models.Model):
@@ -16,6 +17,7 @@ class ObjectResult(models.Model):
     object_class = models.CharField(max_length=255)
     confidence_score = models.FloatField()
     remarks = models.TextField()
+    bbox = ArrayField(models.IntegerField(),default=list, null=False, blank=False)
     class Meta:
         db_table = "ObjectResult"
 
