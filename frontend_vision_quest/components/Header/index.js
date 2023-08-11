@@ -20,6 +20,16 @@ export default function Header() {
                         Sign Up
                 </Link>
               </div>
+              {/* <Link href="/profile" className="flex items-center space-x-2">
+                <p className="text-gray-400">Hello, </p>
+                <p className="text-gray-400 font-bold">Raeez </p>
+                <img
+                  width={60}
+                  src='https://cdn-icons-png.flaticon.com/512/6596/6596121.png' // Use the user's avatar URL
+                  alt="User Avatar"
+                  className="w-8 h-8 rounded-full"
+                />
+              </Link> */}
           </nav>
         </header>
       </>
