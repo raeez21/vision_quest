@@ -19,10 +19,7 @@ from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 from django.core.files.storage import default_storage
-# from ..models.ssd_coco import ssd_coco
-# sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-#print("paath: ", os.getcwd())
-from models.ssd_coco.detect import detect1
+from models.ssd_coco import ssd_coco
 from django.conf import settings
 import datetime
 from .utils import get_related
@@ -69,8 +66,13 @@ def analyze(request):
         if image_file:
             user_name = request.user.username
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+            objects = request.data.get('objects', [])  # Get list of objects
+            confThreshold = float(request.data.get('confThreshold', 0.5))  # Get confThreshold
+            nmsThreshold = float(request.data.get('nmsThreshold', 0.5))
+            options = {'objects': objects, 'Confidence Threshold': confThreshold, 'NMS Threshold': nmsThreshold}
+
             media = Media()
-            media.job = Jobs.objects.create(user=request.user, options={}, timestamp=timezone.now())
+            media.job = Jobs.objects.create(user=request.user, options=options, timestamp=timezone.now())
             media.image_name = image_file.name
             media.image_path = os.path.join(settings.MEDIA_ROOT,'input',f"{user_name}_{timestamp}_{image_file.name}")
             media.image_size = f"{image_file.size / 1024:.2f} KB"
@@ -86,11 +88,9 @@ def analyze(request):
             with open(image_input_path, 'wb') as f:
                 for chunk in image_file.chunks():
                     f.write(chunk)
-            
-            objectInfo = detect1(image_input_path,image_output_path)
+            objectInfo = ssd_coco.detect(image_input_path, image_output_path, confThreshold, nmsThreshold, objects)
             print("obinfo:",objectInfo)
             objectInfo_serializable = [[bbox.tolist(), label, conf] for bbox, label,conf in objectInfo]
-            print(objectInfo)
             response_data = {
                     'message': 'Image analysis complete.',
                     'result': objectInfo_serializable,  # Replace with your actual result

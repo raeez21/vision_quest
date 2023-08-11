@@ -1,5 +1,6 @@
 import cv2
 import os
+from random import randint
 thres = 0.45 # Threshold to detect object
 print()
 classNames = []
@@ -23,8 +24,9 @@ net.setInputMean((127.5, 127.5, 127.5))
 net.setInputSwapRB(True)
 
 
-def getObjects(img, thres, nms, draw=True, objects=[]):
-    classIds, confs, bbox = net.detect(img,confThreshold=thres,nmsThreshold=nms)
+def getObjects(img, confThres, nmsThresh, objects=[], draw=True):
+    classIds, confs, bbox = net.detect(img,confThreshold=confThres,nmsThreshold=nmsThresh)
+    object_colors = {}
     #print("predicing",classIds,bbox)
     if len(objects) == 0: objects = classNames
     objectInfo =[]
@@ -33,20 +35,26 @@ def getObjects(img, thres, nms, draw=True, objects=[]):
             className = classNames[classId - 1]
             #print("clasName",className)
             if className in objects:
+            	# Check if the object already has a color assigned
+                if className in object_colors:
+                    color = object_colors[className]
+                else:
+                	color = (randint(0, 255), randint(0, 255), randint(0, 255))
+                	object_colors[className] = color
+
                 objectInfo.append([box,className, str(round(confidence*100,2))])
                 if (draw):
-                    cv2.rectangle(img,box,color=(0,255,0),thickness=2)
+                    cv2.rectangle(img,box,color=color,thickness=2)
                     cv2.putText(img,classNames[classId-1].upper(),(box[0]+10,box[1]+30),
-                    cv2.FONT_HERSHEY_COMPLEX,1,(0,255,0),2)
+                    cv2.FONT_HERSHEY_COMPLEX,1,color,2)
                     cv2.putText(img,str(round(confidence*100,2)),(box[0]+200,box[1]+30),
-                    cv2.FONT_HERSHEY_COMPLEX,1,(0,255,0),2)
+                    cv2.FONT_HERSHEY_COMPLEX,1,color,2)
 
     return img,objectInfo
 
-def detect1(image_input_path, image_ouput_path):
-    
+def detect(image_input_path, image_ouput_path, confThresh, nmsThresh, objects=[]):
     img = cv2.imread(image_input_path)
-    result, objectInfo = getObjects(img, 0.50, 0.7, objects=[])
+    result, objectInfo = getObjects(img, confThresh, nmsThresh, objects)
     # print(result, objectInfo)
     cv2.imwrite(image_ouput_path, result)
     return objectInfo
