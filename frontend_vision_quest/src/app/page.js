@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 
@@ -25,9 +26,9 @@ export default function Page() {
               </p>
             </div>
             <div className="flex-1 flex items-center justify-center">
-              <button className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
+              <Link href="/signin" className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
                 Try Now
-              </button>
+              </Link>
             </div>
           </div>
 
