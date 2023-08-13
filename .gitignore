@@ -1,1 +1,6 @@
 vision_quest/media/
+vision_quest/ml_models/ssd_coco/ssd_mobilenet_v3_large_coco_2020_01_14.pbtxt
+vision_quest/ml_models/ssd_coco/frozen_inference_graph.pb
+vision_quest/ml_models/yolov7_coco/traced_model.pt
+vision_quest/ml_models/yolov7_coco/yolov7.pt
+vision_quest/ml_models/yolov7_coco/runs

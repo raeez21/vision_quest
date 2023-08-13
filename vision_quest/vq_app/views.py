@@ -19,10 +19,9 @@ from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 from django.core.files.storage import default_storage
-from models.ssd_coco import ssd_coco
 from django.conf import settings
 import datetime
-from .utils import get_related
+from .utils import get_related, invoke_model
 # Add the root directory of the project to the Python path
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models')))
 
@@ -55,6 +54,9 @@ def login(request):
     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+
+
+
 @api_view(['POST'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
@@ -66,52 +68,32 @@ def analyze(request):
         if image_file:
             user_name = request.user.username
             timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
-            objects = request.data.get('objects', [])  # Get list of objects
+            model = request.data.get('model')
+            dataset = request.data.get('dataset')
+            objects_str = request.data.get('objects', [])  # Get list of objects
+            objects = objects_str.split(',') if objects_str else []
             confThreshold = float(request.data.get('confThreshold', 0.5))  # Get confThreshold
             nmsThreshold = float(request.data.get('nmsThreshold', 0.5))
-            options = {'objects': objects, 'Confidence Threshold': confThreshold, 'NMS Threshold': nmsThreshold}
+            options = {'model':model,'dataset':dataset,'objects': objects, 'ConfidenceThreshold': confThreshold, 'NmsThreshold': nmsThreshold}
 
+            #Save Media Model
             media = Media()
             media.job = Jobs.objects.create(user=request.user, options=options, timestamp=timezone.now())
             media.image_name = image_file.name
             media.image_path = os.path.join(settings.MEDIA_ROOT,'input',f"{user_name}_{timestamp}_{image_file.name}")
             media.image_size = f"{image_file.size / 1024:.2f} KB"
-            
             media.save()
-            # media.image_path = image_file.name
-            # media.image.save(image_file.name, image_file)
-            # media.save()
-            # image_path = default_storage.url(media.image.name)
-            # print("in here image_path:",image_path)
-            image_input_path =  media.image_path#os.path.join(settings.MEDIA_ROOT, media.image_path)
+
+            #Save the incoming image into CDN
+            image_input_path =  media.image_path  #os.path.join(settings.MEDIA_ROOT, media.image_path)
             image_output_path = os.path.join(settings.MEDIA_ROOT,'output',os.path.basename(image_input_path))
             with open(image_input_path, 'wb') as f:
                 for chunk in image_file.chunks():
                     f.write(chunk)
-            objectInfo = ssd_coco.detect(image_input_path, image_output_path, confThreshold, nmsThreshold, objects)
-            print("obinfo:",objectInfo)
-            objectInfo_serializable = [[bbox.tolist(), label, conf] for bbox, label,conf in objectInfo]
-            response_data = {
-                    'message': 'Image analysis complete.',
-                    'result': objectInfo_serializable,  # Replace with your actual result
-                }
-            full_related_results = []
-            unique_classes = set()
-            for obj_info in objectInfo:
-                object_result = ObjectResult(
-                    job = media.job,
-                    bbox = obj_info[0].tolist(),
-                    object_class = obj_info[1],
-                    confidence_score = float(obj_info[2]),
-                    remarks = "",
-                )
-                object_result.save()
-                unique_classes.add(obj_info[1])
-            for obj_name in unique_classes:
-                if obj_name != 'person':
-                    related_results = get_related(obj_name)
-                    full_related_results.append(related_results)
-            print("full related:",full_related_results)
+
+            #Call the Model based on input data
+            response_data = invoke_model(media.job, image_input_path, image_output_path, options)
+        
             return JsonResponse(response_data)
 
         return JsonResponse({'error': 'No image file provided.'}, status=status.HTTP_400_BAD_REQUEST)
