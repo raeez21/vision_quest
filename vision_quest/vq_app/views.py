@@ -20,8 +20,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
 from django.core.files.storage import default_storage
 from django.conf import settings
-import datetime
+# import datetime
 from .utils import get_related, invoke_model
+from datetime import datetime
 # Add the root directory of the project to the Python path
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models')))
 
@@ -67,7 +68,7 @@ def analyze(request):
     if request.data.get('type') == 'image':
         if image_file:
             user_name = request.user.username
-            timestamp = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             model = request.data.get('model')
             dataset = request.data.get('dataset')
             objects_str = request.data.get('objects', [])  # Get list of objects
@@ -80,13 +81,18 @@ def analyze(request):
             media = Media()
             media.job = Jobs.objects.create(user=request.user, options=options, timestamp=timezone.now())
             media.image_name = image_file.name
-            media.image_path = os.path.join(settings.MEDIA_ROOT,'input',f"{user_name}_{timestamp}_{image_file.name}")
+            media.input_image_path = os.path.join(settings.MEDIA_ROOT,'input',f"{user_name}_{timestamp}_{image_file.name}")
+            
+            image_input_path =  media.input_image_path  #os.path.join(settings.MEDIA_ROOT, media.image_path)
+            image_output_path = os.path.join(settings.MEDIA_ROOT,'output',os.path.basename(image_input_path))
+            
+            media.output_image_path = image_output_path
             media.image_size = f"{image_file.size / 1024:.2f} KB"
             media.save()
 
             #Save the incoming image into CDN
-            image_input_path =  media.image_path  #os.path.join(settings.MEDIA_ROOT, media.image_path)
-            image_output_path = os.path.join(settings.MEDIA_ROOT,'output',os.path.basename(image_input_path))
+            # image_input_path =  media.image_path  #os.path.join(settings.MEDIA_ROOT, media.image_path)
+            # image_output_path = os.path.join(settings.MEDIA_ROOT,'output',os.path.basename(image_input_path))
             with open(image_input_path, 'wb') as f:
                 for chunk in image_file.chunks():
                     f.write(chunk)
@@ -99,6 +105,25 @@ def analyze(request):
         return JsonResponse({'error': 'No image file provided.'}, status=status.HTTP_400_BAD_REQUEST)
     else:
         return JsonResponse({'error': 'Video coming soon'})
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def dashboard(request):
+    user = request.user
+    media_entries = Media.objects.filter(job__user=user).order_by('-job__timestamp')
+
+    result_list = []
+    for media_entry in media_entries:
+        formatted_timestamp = media_entry.job.timestamp.strftime('%d-%m-%Y')
+        result_list.append({
+            "image_name": media_entry.image_name,
+            "output_image_path": media_entry.output_image_path,
+            "timestamp": formatted_timestamp
+        })
+    print("result LISt:",result_list)
+    return JsonResponse(result_list, safe=False)
 
 # class AnalyzeView(LoginRequiredMixin, View):
 #     def post(self, request):

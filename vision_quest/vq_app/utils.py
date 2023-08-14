@@ -1,6 +1,6 @@
 
 from serpapi import GoogleSearch
-from .models import ObjectResult
+from .models import ObjectResult, RelatedProducts
 # import sys
 # sys.path.insert(0, 'models/yolov7_coco')
 from ml_models.ssd_coco import ssd_coco
@@ -31,7 +31,7 @@ def image_search(obj_name):
     return None
 
 
-def get_related(obj_name):
+def get_related(obj_name, job):
     print("obj_name,",obj_name)
     related_content_id = image_search(obj_name)
     if related_content_id:
@@ -46,7 +46,14 @@ def get_related(obj_name):
         search = GoogleSearch(params)
         related_results = search.get_dict()["related_content"]
         first_5_related_results = related_results[:5] if len(related_results) >= 5 else related_results
-        selected_fields = [{"title": item["title"], "link": item["link"], "original": item["original"]} for item in first_5_related_results]
+        selected_fields = [{"title": item["title"], "link": item["link"], "image_link": item["original"]} for item in first_5_related_results]
+        for item in selected_fields:
+            RelatedProducts.objects.create(
+                job=job,
+                title=item["title"],
+                link=item["link"],
+                image_link=item["image_link"]
+            )
         return selected_fields
 
 
@@ -90,7 +97,7 @@ def invoke_model(job, image_input_path, image_output_path, options):
             unique_classes.add(obj_info[1])
         for obj_name in unique_classes:
             if obj_name != 'person' and PERFORM_RELATED:
-                related_results = get_related(obj_name)
+                related_results = get_related(obj_name, job)
                 full_related_results.append(related_results)
-        print("full related:",full_related_results)
+        # print("full related:",full_related_results)
     return response_data

@@ -11,6 +11,14 @@ class Jobs(models.Model):
     class Meta:
         db_table = "Jobs"
 
+class RelatedProducts(models.Model):
+    job = models.ForeignKey(Jobs, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    link = models.URLField()
+    image_link = models.URLField()
+
+    class Meta:
+        db_table = "RelatedProducts"
 
 class ObjectResult(models.Model):
     job = models.ForeignKey(Jobs, on_delete=models.CASCADE)
@@ -34,7 +42,8 @@ class ProductResult(models.Model):
 
 class Media(models.Model):
     job = models.ForeignKey(Jobs, on_delete=models.CASCADE)
-    image_path = models.CharField(max_length=255)
+    input_image_path  = models.CharField(max_length=255)
+    output_image_path = models.CharField(max_length=255)
     image_size = models.CharField(max_length=255)
     image_name = models.CharField(max_length=255)
     class Meta:
