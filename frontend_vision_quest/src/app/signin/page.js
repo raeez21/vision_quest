@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link";
+import { useState } from "react";
 
 /*
   This example requires some changes to your config:
@@ -15,6 +18,33 @@ import Link from "next/link";
   ```
 */
 export default function SignIn() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        // Handle successful sign-in, e.g., redirect
+      } else {
+        const data = await response.json();
+        setError(data.message);
+      }
+    } catch (error) {
+      setError('An error occurred while signing in.');
+    }
+  };
+
   return (
     <>
       <div className="flex min-h-full flex-1 h-screen flex-col justify-center px-6 py-12 lg:px-8">
@@ -30,7 +60,8 @@ export default function SignIn() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" action="#" method="POST">
+          <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
+            {error && <div className="text-red-500 mb-2">{error}</div>}
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
                 Email address
@@ -43,6 +74,8 @@ export default function SignIn() {
                   autoComplete="email"
                   placeholder="Enter your email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>
@@ -67,6 +100,8 @@ export default function SignIn() {
                   autoComplete="current-password"
                   placeholder="Enter your password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                 />
               </div>

@@ -9,7 +9,7 @@ export default function Page() {
             <Header />
             <main className="container mb-auto mx-auto mt-8">
               <div className="bg-gray-800 p-10 rounded-2xl text-center">
-                <h2 className="text-3xl font-bold text-gray-400 font-semibold mb-4">Analyse New Image</h2>
+                <h2 className="text-3xl font-bold text-gray-400 mb-4">Analyse New Image</h2>
                 <div className="mt-20 flex flex-col items-center justify-center">
                   <div className="items-center flex w-76 h-48 bg-gray-600 rounded-xl">
                     <div className="mx-auto">

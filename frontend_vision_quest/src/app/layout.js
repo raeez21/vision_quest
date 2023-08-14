@@ -1,3 +1,4 @@
+import { SidebarMenu } from '../../components/SidebarMenu'
 import './globals.css'
 import { Poppins } from 'next/font/google'
 
@@ -14,7 +15,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={poppins.className}>{children}</body>
+      <body className={poppins.className}>
+        <div className="flex">
+          <SidebarMenu />
+          <main className="flex-1">{children}</main>
+        </div>
+      </body>
     </html>
   )
 }
