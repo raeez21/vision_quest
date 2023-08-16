@@ -44,7 +44,7 @@ export default function Page() {
             <Header />
             <main className="container mb-auto mx-auto mt-8">
                 <div className="mb-8">
-                    <h2 className="text-3xl font-semibold mb-4">Dashboard</h2>
+                    <h2 className="text-3xl font-semibold mb-4">Dashboard Temp</h2>
                     <div className="flex flex-row justify-end items-center space-x-10">
                         <span className="text-gray-700">Sort by:</span>
                         <div>
