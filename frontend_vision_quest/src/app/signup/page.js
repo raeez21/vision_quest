@@ -67,7 +67,7 @@ export default function SignUp() {
                             name="first_name"
                             type="text"
                             autoComplete="firstName"
-                            placeholder="Enter your firstName"
+                            placeholder="Enter your first name"
                             required
                             value={formData.first_name}
                             onChange={handleInputChange}
@@ -85,7 +85,7 @@ export default function SignUp() {
                             name="last_name"
                             type="text"
                             autoComplete="lastName"
-                            placeholder="Enter your lastName"
+                            placeholder="Enter your last name"
                             required
                             value={formData.last_name}
                             onChange={handleInputChange}
