@@ -5,6 +5,7 @@ from .models import ObjectResult, RelatedProducts
 # sys.path.insert(0, 'models/yolov7_coco')
 from ml_models.ssd_coco import ssd_coco
 from ml_models.yolov7_coco import yolov7_coco
+from ml_models.frcnn_voc import frcnn_voc
 from .change_cwd_context import change_cwd
 import os
 
@@ -65,6 +66,8 @@ def invoke_model(job, image_input_path, image_output_path, options):
     elif options['model']=='yolov7' and options['dataset'] == 'coco':
         with change_cwd(os.path.join(os.getcwd(), "ml_models\yolov7_coco")):
             objectInfo = yolov7_coco.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
+    elif options['model'] == 'f_rcnn' and options['dataset'] == 'voc':
+        objectInfo = frcnn_voc.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
     print("object Info:",objectInfo)
     objectInfo_serializable = [[bbox.tolist(), label, conf] for bbox, label,conf in objectInfo]
     response_data = {

@@ -41,7 +41,7 @@ def getObjects(img, confThres, nmsThresh, objects=[], draw=True):
     classIds, confs, bbox = net.detect(img,confThreshold=confThres,nmsThreshold=nmsThresh)
     object_colors = {}
     print("objjj",type(objects))
-    print("predicing",type(bbox))
+    # print("ClassNames",classNames)
     if len(objects) == 0: objects = classNames
     objectInfo =[]
     if len(classIds) != 0:
@@ -65,7 +65,7 @@ def getObjects(img, confThres, nmsThresh, objects=[], draw=True):
                     # cv2.FONT_HERSHEY_COMPLEX,1,color,2)
                     # cv2.putText(img,str(round(confidence*100,2)),(box[0]+200,box[1]+30),
                     # cv2.FONT_HERSHEY_COMPLEX,1,color,2)
-
+    print("Object INFo:",objectInfo)
     return img,objectInfo
 
 def detect(image_input_path, image_ouput_path, confThresh, nmsThresh, objects=[]):
