@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignUp() {
@@ -10,35 +11,44 @@ export default function SignUp() {
         password: '',
         first_name: '',
         last_name: '',
-      });
-    console.log(formData,"formData")
-      const handleInputChange = (e) => {
+    });
+
+    const [signupError, setSignupError] = useState('')
+
+    const router = useRouter()
+
+    const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevData) => ({ ...prevData, [name]: value }));
-      };
+    };
     
-      const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
     
         try {
-          const response = await fetch('http://127.0.0.1:8000/signup/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-          });
-    
-          if (response.ok) {
-            // Handle successful sign-up (e.g., redirect or display a success message)
-            console.log("Sign in sucess!!")
-          } else {
-            // Handle error (e.g., display an error message)
-          }
+            const response = await fetch('http://127.0.0.1:8000/signup/', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+        
+            if (response.ok) {
+                // Handle successful sign-up 
+                console.log("Sign up success!!")
+                router.push('/signin') // redirect to login pagee.
+            } else {
+                // Handle error 
+                const data = await response.json()
+                if (data.username) {
+                    setSignupError(data.username[0])
+                }
+            }
         } catch (error) {
-          console.error('Error signing up:', error);
+        console.error('Error signing up:', error);
         }
-      };
+    };
 
     return (
         <>
@@ -56,7 +66,7 @@ export default function SignUp() {
 
             <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                 <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
-                    {/* {error && <div className="text-red-500 mb-2">{error}</div>} */}
+                    {signupError && <div className="text-red-500 mb-2">{signupError}</div>}
                     <div>
                         <label htmlFor="firstName" className="block text-sm font-medium leading-6 text-gray-900">
                             First Name
