@@ -32,8 +32,13 @@ export default function SignIn() {
       });
 
       if (response.ok) {
-        // Handle successful login 
+        const data = await response.json();
+        const token = data.token; 
+
+        localStorage.setItem('authToken', token);
+
         console.log("Log in sucess!!")
+        
         router.push('/dashboard'); // Redirect to dashboard page
       } else {
         // Handle login error 
