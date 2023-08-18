@@ -10,7 +10,7 @@ export const SidebarMenu = () => {
     // };
     return (
         <div>
-            <nav className="fixed left-0 top-0 bg-white h-screen w-1/4 shadow-md">
+            <nav className="fixed left-0 top-0 bg-white w-1/4 shadow-md">
                 <div className="flex flex-col space-y-4">
                     <div className="p-4">
                         <Link 
