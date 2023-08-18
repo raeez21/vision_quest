@@ -1,27 +1,18 @@
 "use client"
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
 export default function SignIn() {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   });
+
+  const [loginError, setLoginError] = useState('');
+
+  const router = useRouter();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,10 +32,20 @@ export default function SignIn() {
       });
 
       if (response.ok) {
-        // Handle successful login (e.g., redirect or display a success message)
+        const data = await response.json();
+        const token = data.token; 
+
+        localStorage.setItem('authToken', token);
+
         console.log("Log in sucess!!")
+        
+        router.push('/dashboard'); // Redirect to dashboard page
       } else {
-        // Handle login error (e.g., display an error message)
+        // Handle login error 
+        const data = await response.json();
+        if (data.detail) {
+          setLoginError(data.detail);
+        }
       }
     } catch (error) {
       console.error('Error logging in:', error);
@@ -67,7 +68,7 @@ export default function SignIn() {
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
           <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
-            {/* {error && <div className="text-red-500 mb-2">{error}</div>} */}
+            {loginError && <div className="text-red-500 mb-2">{loginError}</div>}
             <div>
               <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
                 User Name
