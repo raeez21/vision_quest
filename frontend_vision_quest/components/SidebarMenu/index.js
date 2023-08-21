@@ -1,41 +1,33 @@
+"use client"
+
 import React from 'react';
 import Link from 'next/link';
-// import { useRouter } from 'next/router';
+import { usePathname } from 'next/navigation';
 
 export const SidebarMenu = () => {
-    // const router = useRouter();
-
-    // const isActive = (route) => {
-    //     return router.pathname === route ? 'text-blue-500' : 'text-white';
-    // };
+    const router = usePathname();
+    const isActive = (route) => {
+        return router === route ? 'bg-gray-600' : 'text-gray-700';
+    };
     return (
         <div>
             <nav className="fixed left-0 top-0 bg-white w-1/4 shadow-md">
                 <div className="flex flex-col space-y-4">
-                    <div className="p-4">
-                        <Link 
-                            href="/dashboard"
-                            className="hover:text-blue-500 text-gray-700 font-bold"
-                        >
+                    <Link 
+                        href="/dashboard"
+                        className={`p-4 font-bold ${isActive('/dashboard')}`}>
                             Dashboard
-                        </Link>
-                    </div>
-                    <div className="p-4">
-                        <Link 
-                            href="/analyse"
-                            className="hover:text-blue-500 text-gray-700 font-bold"
-                        >
+                    </Link>
+                    <Link 
+                        href="/analyse"
+                        className={`p-4 font-bold ${isActive('/analyse')}`}>
                             Analyse
-                        </Link>
-                    </div>
-                    <div className='p-4'>
-                        <Link 
-                            href="/results"
-                            className="hover:text-blue-500 text-gray-700 font-bold"
-                        >
+                    </Link>
+                    <Link 
+                        href="/results"
+                        className={`p-4 font-bold ${isActive('/results')}`}>
                             Results
-                        </Link>
-                    </div>
+                    </Link>
                 </div>
             </nav>
         </div>

@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "../../../components/AuthContext";
 
 export default function SignIn() {
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -35,7 +37,7 @@ export default function SignIn() {
         const data = await response.json();
         const token = data.token; 
 
-        localStorage.setItem('authToken', token);
+        login(token); 
 
         console.log("Log in sucess!!")
         

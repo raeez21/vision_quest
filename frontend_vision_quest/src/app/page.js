@@ -1,6 +1,9 @@
+"use client"
+
 import Link from "next/link";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
+import { useAuth } from "../../components/AuthContext";
 
 
 const reviewImages = [
@@ -12,6 +15,7 @@ const reviewImages = [
 ];
 
 export default function Page() {
+  const { authToken } = useAuth()
   return (
     <>
       <div className="flex flex-col h-screen justify-between">
@@ -26,9 +30,13 @@ export default function Page() {
               </p>
             </div>
             <div className="flex-1 flex items-center justify-center">
-              <Link href="/signin" className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
-                Try Now
-              </Link>
+              { authToken ?
+                (<Link href="/analyse" className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
+                  Analyse Now
+                </Link>) : 
+                (<Link href="/signin" className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
+                  Try Now
+                </Link>)}
             </div>
           </div>
 
