@@ -61,6 +61,7 @@ def get_related(obj_name, job):
 
 def invoke_model(job, image_input_path, image_output_path, options):
 
+    print("Invoking the model with options:",options)
     if options['model']=='ssd' and options['dataset'] == 'coco':
         objectInfo = ssd_coco.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
     elif options['model']=='yolov7' and options['dataset'] == 'coco':
@@ -72,6 +73,7 @@ def invoke_model(job, image_input_path, image_output_path, options):
     objectInfo_serializable = [[bbox.tolist(), label, conf] for bbox, label,conf in objectInfo]
     response_data = {
             'message': 'Image analysis complete.',
+            'job_id':job.job_id,
             'result': objectInfo_serializable,  
         }
     full_related_results = []
@@ -103,4 +105,5 @@ def invoke_model(job, image_input_path, image_output_path, options):
                 related_results = get_related(obj_name, job)
                 full_related_results.append(related_results)
         # print("full related:",full_related_results)
+    print("respone:",response_data)
     return response_data

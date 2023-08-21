@@ -50,7 +50,7 @@ def login(request):
         #     'access': str(refresh.access_token),
         # }
         token, created = Token.objects.get_or_create(user=user)
-        return Response({'token': token.key}, status=status.HTTP_200_OK)
+        return Response({'token': token.key,'username':username}, status=status.HTTP_200_OK)
         # return Response(data, status=status.HTTP_200_OK)
     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -73,8 +73,10 @@ def analyze(request):
             dataset = request.data.get('dataset')
             objects_str = request.data.get('objects', [])  # Get list of objects
             objects = objects_str.split(',') if objects_str else []
-            confThreshold = float(request.data.get('confThreshold', 0.5))  # Get confThreshold
-            nmsThreshold = float(request.data.get('nmsThreshold', 0.5))
+            confThreshold_str = request.data.get('confThreshold')  # Get confThreshold
+            confThreshold = float(confThreshold_str) if confThreshold_str else 0.5
+            nmsThreshold_str = request.data.get('nmsThreshold')
+            nmsThreshold = float(nmsThreshold_str) if nmsThreshold_str else 0.5 
             options = {'model':model,'dataset':dataset,'objects': objects, 'ConfidenceThreshold': confThreshold, 'NmsThreshold': nmsThreshold}
 
             #Save Media Model
@@ -125,6 +127,42 @@ def dashboard(request):
     print("result LISt:",result_list)
     return JsonResponse(result_list, safe=False)
 
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def results(request):
+    user = request.user
+    job_id = request.GET.get('job_id') # Handle the case when specific job_id is provided in query parameters
+    if job_id:
+        try:
+            job = Jobs.objects.get(pk=job_id, user=user)
+        except Jobs.DoesNotExist:
+            return HttpResponseBadRequest("Job not found for the current user.")
+        object_results = ObjectResult.objects.filter(job=job)
+        media = Media.objects.get(job=job)
+        result_data = {
+            "job_id": job.job_id,
+            "options": job.options,
+            "object_results": [{
+                "object_class": obj.object_class,
+                "confidence_score": obj.confidence_score,
+                "remarks": obj.remarks,
+                "bbox": obj.bbox
+            } for obj in object_results],
+            "media": {
+                "output_image_path": media.output_image_path,
+                "image_size": media.image_size,
+                "image_name": media.image_name,
+            },
+        }
+    else:
+        jobs = Jobs.objects.filter(user=user)
+        result_data = [{
+            "job_id": job.job_id,
+            "image_name": job.media_set.first().image_name,
+            "timestamp": job.timestamp
+        } for job in jobs]
+    return JsonResponse(result_data, safe=False)
 # class AnalyzeView(LoginRequiredMixin, View):
 #     def post(self, request):
 #         image_file = request.FILES.get('image')

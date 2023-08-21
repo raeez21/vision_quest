@@ -9,5 +9,6 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     # path('login/', auth_views.LoginView.as_view(), name='login'),
     # path('analyze/', views.AnalyzeView.as_view(), name='analyze'),
-    path('analyze/',views.analyze, name='analyze')
+    path('analyze/',views.analyze, name='analyze'),
+    path('results/',views.results, name = 'results')
 ]
