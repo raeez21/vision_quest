@@ -5,7 +5,7 @@ import { useAuth } from "../AuthContext";
 
 export default function Header() {
   const { authToken } = useAuth();
-  const { username } = authToken
+  // const { username } = authToken
 
   return (
     <>
@@ -15,7 +15,7 @@ export default function Header() {
           {authToken ? (
             <Link href="/profile" className="flex items-center space-x-2">
             <p className="text-gray-400">Hello, </p>
-            <p className="text-gray-400 font-bold">{username}</p>
+            <p className="text-gray-400 font-bold">{authToken.username}</p>
             <img
               width={60}
               src='https://cdn-icons-png.flaticon.com/512/6596/6596121.png' // Use the user's avatar URL

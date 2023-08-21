@@ -12,6 +12,7 @@ function Profile() {
     const handleLogout = () => {
         logout(); 
         router.push('/'); 
+        console.log("Log out success!!")
     };
 
     return (
