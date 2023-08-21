@@ -123,7 +123,7 @@ export default function SignUp() {
                     </div>
                     <div>
                         <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
-                            User Name
+                            Username
                         </label>
                         <div className="mt-2">
                             <input
