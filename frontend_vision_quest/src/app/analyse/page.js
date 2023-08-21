@@ -8,6 +8,7 @@ import { useAuth } from "../../../components/AuthContext";
 
 export default function Page() {
   const { authToken } = useAuth();
+  const { token } = authToken
   const router = useRouter();
 
   const [formData, setFormData] = useState({
@@ -40,7 +41,7 @@ export default function Page() {
       const response = await fetch('http://127.0.0.1:8000/analyze/', {
         method: 'POST',
         headers: {
-          Authorization: `Token ${authToken}`,
+          Authorization: `Token ${token}`,
         },
         body: formPayload,
       });
