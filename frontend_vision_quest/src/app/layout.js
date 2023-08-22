@@ -1,5 +1,4 @@
 import { AuthProvider } from '../../components/AuthContext'
-import { SidebarMenu } from '../../components/SidebarMenu'
 import './globals.css'
 import { Poppins } from 'next/font/google'
 
@@ -19,7 +18,6 @@ export default function RootLayout({ children }) {
       <body className={poppins.className}>
         <AuthProvider>
           <div className="flex">
-            <SidebarMenu />
             <main className="flex-1">{children}</main>
           </div>
         </AuthProvider>

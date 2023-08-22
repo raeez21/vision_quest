@@ -1,7 +1,11 @@
+'use client'
+
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
 import { ImageDetails, ObjectDetectorResults } from "../../../components/ObjectDectectorResults";
 import { ProductDetectorResults } from "../../../components/ProductDetectorResults";
+import { SidebarMenu } from "../../../components/SidebarMenu";
+import { useAuth } from "../../../components/AuthContext";
 
 const imageDetails = {
     name: 'image.jpg',
@@ -32,8 +36,14 @@ const relatedProducts = [
 ];
 
 export default function Page() {
+    const { authToken } = useAuth()
+
     return (
       <>
+        { authToken && 
+            <div className='fixed ml-10 mt-28'>
+                <SidebarMenu />
+        </div> }
         <div className="flex flex-col justify-between">
             <Header />
             <main className="container  mb-auto mx-auto mt-8">

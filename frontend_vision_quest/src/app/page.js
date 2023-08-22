@@ -4,6 +4,7 @@ import Link from "next/link";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import { useAuth } from "../../components/AuthContext";
+import { SidebarMenu } from "../../components/SidebarMenu";
 
 
 const reviewImages = [
@@ -18,6 +19,10 @@ export default function Page() {
   const { authToken } = useAuth()
   return (
     <>
+      { authToken && 
+        <div className='fixed ml-10 mt-28'>
+          <SidebarMenu />
+        </div> }
       <div className="flex flex-col h-screen justify-between">
         <Header />
         <main className="container mb-auto mx-auto mt-8">
@@ -31,10 +36,10 @@ export default function Page() {
             </div>
             <div className="flex-1 flex items-center justify-center">
               { authToken ?
-                (<Link href="/analyse" className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
+                (<Link href="/analyse" className="font-bold bg-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-500 hover:text-slate-300">
                   Analyse Now
                 </Link>) : 
-                (<Link href="/signin" className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
+                (<Link href="/signin" className="font-bold bg-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-500 hover:text-slate-300">
                   Try Now
                 </Link>)}
             </div>

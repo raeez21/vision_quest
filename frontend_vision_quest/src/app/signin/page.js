@@ -36,8 +36,8 @@ export default function SignIn() {
       if (response.ok) {
         const data = await response.json();
         const token = data.token; 
-
-        login(token); 
+        const username = data.username;
+        login( token, username ); 
 
         console.log("Log in sucess!!")
         
@@ -73,7 +73,7 @@ export default function SignIn() {
             {loginError && <div className="text-red-500 mb-2">{loginError}</div>}
             <div>
               <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
-                User Name
+                Username
               </label>
               <div className="mt-2">
                 <input

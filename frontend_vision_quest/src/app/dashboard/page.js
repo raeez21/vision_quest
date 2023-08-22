@@ -1,7 +1,10 @@
-// "use client"
+"use client"
 
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
+import { SidebarMenu } from "../../../components/SidebarMenu";
+import { useAuth } from "../../../components/AuthContext";
+import { useEffect, useState } from "react";
 // import { useEffect, useRef } from "react";
 // import Chart from 'chart.js/auto';
 
@@ -14,6 +17,38 @@ const imageUrls = [
 ];
 
 export default function Page() {
+    const { authToken } = useAuth()
+
+    const [dashboardData, setDashboardData] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/dashboard/', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setDashboardData(data);
+                } else {
+                    // Handle API error
+                    console.log('Error fetching dashboard data:', response);
+                }
+            } catch (error) {
+                console.error('Error fetching dashboard data:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchDashboardData();
+    }, [authToken]);
+
     // const chartRef = useRef(null);
 
     // const usageData = {
@@ -40,11 +75,15 @@ export default function Page() {
 
     return (
       <>
+        { authToken && 
+            <div className='fixed ml-10 mt-28'>
+                <SidebarMenu />
+        </div> }
         <div className="flex flex-col justify-between">
             <Header />
             <main className="container mb-auto mx-auto mt-8">
+                <h2 className="text-3xl font-semibold mb-4">Dashboard</h2>
                 <div className="mb-8">
-                    <h2 className="text-3xl font-semibold mb-4">Dashboard Temp</h2>
                     <div className="flex flex-row justify-end items-center space-x-10">
                         <span className="text-gray-700">Sort by:</span>
                         <div>
@@ -63,56 +102,59 @@ export default function Page() {
                         </div>
                     </div>
                 </div>
-                <div className="mb-8">
-                    <div className="pt-10 flex flex-col items-start space-y-6">
-                        <div>
-                            <h3 className="text-2xl font-semibold mb-2">Last Week</h3>
-                            <div className="flex space-x-4 items-center">
-                                {imageUrls.map((image, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex flex-col items-center"
-                                    >
+                {loading ? (
+                    <p>Loading...</p>
+                    ) : (
+                    <div className="mb-8">
+                        <div className="pt-10 flex flex-col items-start space-y-6">
+                            <div>
+                                <h3 className="text-2xl font-semibold mb-2">Last Week</h3>
+                                <div className="flex space-x-4 items-center">
+                                    {dashboardData?.map((item, index) => (
                                         <div
-                                            className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                                            style={{
-                                                backgroundImage: `url(${image.url})`,
-                                                backgroundSize: 'cover',
-                                            }}
-                                        ></div>
-                                        <p className="mt-2 text-sm">{image.caption}</p>
-                                    </div>
-                                ))}
+                                            key={index}
+                                            className="flex flex-col items-center"
+                                        >
+                                            <img
+                                                className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
+                                                alt={item.image_name}
+                                                src={`file://${item.output_image_path}`}
+                                            ></img>
+                                            <p className="mt-2 text-sm">Name: {item.image_name}</p>
+                                            <p className="text-sm">Timestamp: {item.timestamp}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="text-2xl font-semibold mb-2">Last Month</h3>
+                                <div className="flex space-x-4 items-center">
+                                    {imageUrls.map((image, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex flex-col items-center"
+                                        >
+                                            <div
+                                                className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
+                                                style={{
+                                                    backgroundImage: `url(${image.url})`,
+                                                    backgroundSize: 'cover',
+                                                }}
+                                            ></div>
+                                            <p className="mt-2 text-sm">{image.caption}</p>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <h3 className="text-2xl font-semibold mb-2">Last Month</h3>
-                            <div className="flex space-x-4 items-center">
-                                {imageUrls.map((image, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex flex-col items-center"
-                                    >
-                                        <div
-                                            className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                                            style={{
-                                                backgroundImage: `url(${image.url})`,
-                                                backgroundSize: 'cover',
-                                            }}
-                                        ></div>
-                                        <p className="mt-2 text-sm">{image.caption}</p>
-                                    </div>
-                                ))}
+                        <div className="mb-8 mt-10">
+                            <h2 className="text-3xl font-semibold mb-4">Usage Analytics</h2>
+                            <div className="bg-white h-64 w-96 p-4 rounded-lg shadow-md">
+                                {/* <canvas ref={chartRef} width={400} height={200}></canvas> */}
                             </div>
                         </div>
                     </div>
-                    <div className="mb-8 mt-10">
-                        <h2 className="text-3xl font-semibold mb-4">Usage Analytics</h2>
-                        <div className="bg-white h-64 w-96 p-4 rounded-lg shadow-md">
-                            {/* <canvas ref={chartRef} width={400} height={200}></canvas> */}
-                        </div>
-                    </div>
-                </div>
+                )}
             </main>
             <Footer />
         </div>

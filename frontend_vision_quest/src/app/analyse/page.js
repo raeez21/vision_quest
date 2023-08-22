@@ -5,6 +5,7 @@ import Footer from "../../../components/Footer";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../components/AuthContext";
+import { SidebarMenu } from "../../../components/SidebarMenu";
 
 export default function Page() {
   const { authToken } = useAuth();
@@ -12,15 +13,29 @@ export default function Page() {
 
   const [formData, setFormData] = useState({
     imageFile: null,
-    algorithm: 'CASCADE CLASSIFIER',
+    algorithm: '',
+    dataset: '',
     objects: '',
     objectConfThreshold: '',
     productConfThreshold: '',
   });
-
+  const [datasetOptions, setDatasetOptions] = useState([]);
+  const [analyseError, setAnalyseError] = useState('');
+  
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
     const newValue = type === 'file' ? e.target.files[0] : value;
+
+    if (name === 'algorithm') {
+      if (value === 'ssd') {
+        setDatasetOptions(['coco', 'other_dataset_1', 'other_dataset_2']);
+      } else if (value === 'yolov7') {
+        setDatasetOptions(['coco', 'voc', 'other_dataset']);
+      } else if (value === 'f_rcnn') {
+        setDatasetOptions(['voc', 'other_dataset']);
+      }
+    }
+
     setFormData((prevData) => ({ ...prevData, [name]: newValue }));
   };
 
@@ -34,7 +49,7 @@ export default function Page() {
     formPayload.append('confThreshold', formData.objectConfThreshold);
     formPayload.append('nmsThreshold', formData.productConfThreshold);
     formPayload.append('model', formData.algorithm);
-    formPayload.append('dataset', 'coco');
+    formPayload.append('dataset', formData.dataset);
   
     try {
       const response = await fetch('http://127.0.0.1:8000/analyze/', {
@@ -54,6 +69,7 @@ export default function Page() {
       } else {
         // Handle API error 
         const data = await response.json();
+        setAnalyseError(data.error)
         console.log(data); 
       }
     } catch (error) {
@@ -63,6 +79,10 @@ export default function Page() {
   
   return (
     <>
+      { authToken && 
+          <div className='fixed ml-10 mt-28'>
+              <SidebarMenu />
+      </div> }
       <div className="flex flex-col justify-between">
         <Header />
         <main className="container mb-auto mx-auto mt-8">
@@ -98,10 +118,28 @@ export default function Page() {
                   value={formData.algorithm}
                   onChange={handleInputChange}
                 >
-                  <option value="CASCADE CLASSIFIER">CASCADE CLASSIFIER</option>
-                  <option value="YOLO">YOLO</option>
-                  <option value="Faster R-CNN">Faster R-CNN</option>
+                  <option value="">Select Algorithm</option>
+                  <option value="yolov7">YOLO</option>
+                  <option value="f_rcnn">Faster R-CNN</option>
                   <option value="ssd">SSD</option>
+                </select>
+              </div>
+
+              {/* Dataset */}
+              <div className="mt-10 flex space-y-2">
+                <label className="text-lg font-bold text-gray-700">Dataset:</label>
+                <select
+                  className="ml-96 form-select"
+                  name="dataset"
+                  value={formData.dataset}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Dataset</option>
+                  {datasetOptions.map((dataset) => (
+                    <option key={dataset} value={dataset}>
+                      {dataset}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -131,15 +169,16 @@ export default function Page() {
                     value={formData.objectConfThreshold}
                     onChange={handleInputChange}
                   />
+                  <span className="text-gray-400">Enter values between 0 and 1</span>
                 </div>
               </div>
               {/* Product Detector Confidence Threshold */}
               <div className="mt-10 mb-12 flex space-y-2">
-                <h4 className="text-lg font-bold text-gray-700">Product Detector Confidence Threshold:</h4>
+                <h4 className="text-lg font-bold text-gray-700">Object Detector NMS Threshold:</h4>
                 <div className="flex items-center space-x-2">
                   <input
                     type="number"
-                    className="ml-24 form-input w-16"
+                    className="ml-44 form-input w-16"
                     min="0"
                     max="1"
                     step="0.01"
@@ -147,14 +186,17 @@ export default function Page() {
                     value={formData.productConfThreshold}
                     onChange={handleInputChange}
                   />
+                  <span className="text-gray-400">Enter values between 0 and 1</span>
                 </div>
               </div>
             </div>
-            <div className="mb-8 ml-96 items-center">
+            {analyseError && <div className="text-red-500 text-center mb-2">{analyseError}</div>}
+            <div className="pb-10 text-center ">
               <button 
-                className="bg-slate-500 font-bold text-gray-900 px-8 py-3 rounded"
-                type="submit">
-                GO
+                className="hover:bg-slate-500 font-bold hover:text-slate-300 px-8 py-3 rounded bg-slate-300 text-slate-500"
+                type="submit"
+              >
+                Analyse
               </button>
             </div>
           </form>
