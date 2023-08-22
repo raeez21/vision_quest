@@ -5,6 +5,7 @@ import Footer from "../../../components/Footer";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../components/AuthContext";
+import { SidebarMenu } from "../../../components/SidebarMenu";
 
 export default function Page() {
   const { authToken } = useAuth();
@@ -78,6 +79,10 @@ export default function Page() {
   
   return (
     <>
+      { authToken && 
+          <div className='fixed ml-10 mt-28'>
+              <SidebarMenu />
+      </div> }
       <div className="flex flex-col justify-between">
         <Header />
         <main className="container mb-auto mx-auto mt-8">

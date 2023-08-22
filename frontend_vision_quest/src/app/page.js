@@ -4,6 +4,7 @@ import Link from "next/link";
 import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import { useAuth } from "../../components/AuthContext";
+import { SidebarMenu } from "../../components/SidebarMenu";
 
 
 const reviewImages = [
@@ -18,6 +19,10 @@ export default function Page() {
   const { authToken } = useAuth()
   return (
     <>
+      { authToken && 
+        <div className='fixed ml-10 mt-28'>
+          <SidebarMenu />
+        </div> }
       <div className="flex flex-col h-screen justify-between">
         <Header />
         <main className="container mb-auto mx-auto mt-8">

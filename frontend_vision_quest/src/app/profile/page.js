@@ -4,9 +4,10 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { useAuth } from '../../../components/AuthContext';
 import { useRouter } from 'next/navigation';
+import { SidebarMenu } from '../../../components/SidebarMenu';
 
 function Profile() {
-    const { logout } = useAuth()
+    const { authToken, logout } = useAuth()
     const router = useRouter();
 
     const handleLogout = () => {
@@ -17,6 +18,10 @@ function Profile() {
 
     return (
         <>
+            { authToken && 
+                <div className='fixed ml-10 mt-28'>
+                    <SidebarMenu />
+            </div> }
             <div className="flex flex-col h-screen justify-between">
                 <Header />
                 <main className="container mb-auto mx-auto mt-8">
