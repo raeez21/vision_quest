@@ -36,10 +36,10 @@ export default function Page() {
             </div>
             <div className="flex-1 flex items-center justify-center">
               { authToken ?
-                (<Link href="/analyse" className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
+                (<Link href="/analyse" className="font-bold bg-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-500 hover:text-slate-300">
                   Analyse Now
                 </Link>) : 
-                (<Link href="/signin" className="font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded">
+                (<Link href="/signin" className="font-bold bg-slate-300 text-slate-700 px-4 py-2 rounded hover:bg-slate-500 hover:text-slate-300">
                   Try Now
                 </Link>)}
             </div>

@@ -25,13 +25,13 @@ export default function Header() {
           ) : (
             <div className="space-x-4 flex">
               <Link 
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-400 hover:bg-gray-50" 
+                  className="-mx-3 block rounded-md px-3 py-2 text-base font-semibold leading-7 text-gray-400 hover:bg-slate-500 hover:text-slate-300" //bg-gray-400 text-slate-700 hover:bg-slate-500 hover:text-slate-300
                   href="/signin"
               >
                 Sign In
               </Link>
               <Link 
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-400 hover:bg-gray-50" 
+                  className="-mx-3 block rounded-md px-3 py-2 text-base font-semibold leading-7 text-gray-400 hover:bg-slate-500 hover:text-slate-300" 
                   href="/signup"
               >
                 Sign Up
