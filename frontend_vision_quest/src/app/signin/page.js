@@ -37,7 +37,7 @@ export default function SignIn() {
         const data = await response.json();
         const token = data.token; 
         const username = data.username;
-        login({ token, username }); 
+        login( token, username ); 
 
         console.log("Log in sucess!!")
         
