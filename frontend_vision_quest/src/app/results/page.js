@@ -6,6 +6,7 @@ import { ImageDetails, ObjectDetectorResults } from "../../../components/ObjectD
 import { ProductDetectorResults } from "../../../components/ProductDetectorResults";
 import { SidebarMenu } from "../../../components/SidebarMenu";
 import { useAuth } from "../../../components/AuthContext";
+import PrivateRoute from "../../../components/PrivateRoute";
 
 const imageDetails = {
     name: 'image.jpg',
@@ -39,7 +40,7 @@ export default function Page() {
     const { authToken } = useAuth()
 
     return (
-      <>
+      <PrivateRoute>
         { authToken && 
             <div className='fixed ml-10 mt-28'>
                 <SidebarMenu />
@@ -76,6 +77,6 @@ export default function Page() {
             <Footer />
         </div>
 
-      </>
+      </PrivateRoute>
     )
   }

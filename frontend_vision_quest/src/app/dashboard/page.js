@@ -5,6 +5,7 @@ import Footer from "../../../components/Footer";
 import { SidebarMenu } from "../../../components/SidebarMenu";
 import { useAuth } from "../../../components/AuthContext";
 import { useEffect, useState } from "react";
+import PrivateRoute from "../../../components/PrivateRoute";
 // import { useEffect, useRef } from "react";
 // import Chart from 'chart.js/auto';
 
@@ -74,7 +75,7 @@ export default function Page() {
     // }, []);
 
     return (
-      <>
+      <PrivateRoute>
         { authToken && 
             <div className='fixed ml-10 mt-28'>
                 <SidebarMenu />
@@ -159,6 +160,6 @@ export default function Page() {
             <Footer />
         </div>
 
-      </>
+      </PrivateRoute>
     )
   }

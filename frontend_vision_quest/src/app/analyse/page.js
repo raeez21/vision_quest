@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../components/AuthContext";
 import { SidebarMenu } from "../../../components/SidebarMenu";
+import PrivateRoute from "../../../components/PrivateRoute";
 
 export default function Page() {
   const { authToken } = useAuth();
@@ -78,7 +79,7 @@ export default function Page() {
   };
   
   return (
-    <>
+    <PrivateRoute>
       { authToken && 
           <div className='fixed ml-10 mt-28'>
               <SidebarMenu />
@@ -203,6 +204,6 @@ export default function Page() {
         </main>
         <Footer />
       </div>
-    </>
+    </PrivateRoute>
   )
 }
