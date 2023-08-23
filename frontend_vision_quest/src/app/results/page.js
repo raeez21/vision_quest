@@ -6,7 +6,7 @@ import { ImageDetails, ObjectDetectorResults } from "../../../components/ObjectD
 import { ProductDetectorResults } from "../../../components/ProductDetectorResults";
 import { SidebarMenu } from "../../../components/SidebarMenu";
 import { useAuth } from "../../../components/AuthContext";
-import PrivateRoute from "../../../components/PrivateRoute";
+import NotLogedIn from "../../../components/NotLogedIn";
 
 const imageDetails = {
     name: 'image.jpg',
@@ -40,43 +40,48 @@ export default function Page() {
     const { authToken } = useAuth()
 
     return (
-      <PrivateRoute>
+      <>
         { authToken && 
             <div className='fixed ml-10 mt-28'>
                 <SidebarMenu />
         </div> }
         <div className="flex flex-col justify-between">
             <Header />
-            <main className="container  mb-auto mx-auto mt-8">
-                <div className="max-w-lg p-6 border border-gray-800 rounded-lg shadow-md">
-                    <img src="/path/to/uploaded/image.jpg" alt="Uploaded" className="w-full rounded-lg" />
-                    <ImageDetails name={imageDetails.name} size={imageDetails.size} />
-                </div>
-                <div className="flex justify-around mt-28">
-                    <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
-                        <ObjectDetectorResults results={objectDetectorResults} />
+            { authToken ? (
+                <main className="container  mb-auto mx-auto mt-8">
+                                        <h2 className="text-3xl font-semibold mb-4">Results</h2>
+                    <div className="max-w-lg p-6 border border-gray-800 rounded-lg shadow-md">
+                        <img src="/path/to/uploaded/image.jpg" alt="Uploaded" className="w-full rounded-lg" />
+                        <ImageDetails name={imageDetails.name} size={imageDetails.size} />
                     </div>
-                    <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
-                        <ProductDetectorResults results={productDetectorResults} />
+                    <div className="flex justify-around mt-28">
+                        <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
+                            <ObjectDetectorResults results={objectDetectorResults} />
+                        </div>
+                        <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
+                            <ProductDetectorResults results={productDetectorResults} />
+                        </div>
                     </div>
-                </div>
 
-                <div className="mb-14 mt-24">
-                    <h2 className="text-3xl font-semibold mb-4">Related Products</h2>
-                    <div className="flex space-x-4 justify-between mt-10">
-                        {relatedProducts.map((imageUrl, index) => (
-                            <div
-                                key={index}
-                                className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                                style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}
-                            ></div>
-                        ))}
+                    <div className="mb-14 mt-24">
+                        <h2 className="text-3xl font-semibold mb-4">Related Products</h2>
+                        <div className="flex space-x-4 justify-between mt-10">
+                            {relatedProducts.map((imageUrl, index) => (
+                                <div
+                                    key={index}
+                                    className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
+                                    style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}
+                                ></div>
+                            ))}
+                        </div>
                     </div>
-                </div>
-            </main>
+                </main>
+            ) : (
+                <NotLogedIn page='results page' heading='Results' />
+            )}
             <Footer />
         </div>
 
-      </PrivateRoute>
+      </>
     )
   }
