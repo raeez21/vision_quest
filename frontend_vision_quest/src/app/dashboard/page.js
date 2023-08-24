@@ -5,6 +5,7 @@ import Footer from "../../../components/Footer";
 import { SidebarMenu } from "../../../components/SidebarMenu";
 import { useAuth } from "../../../components/AuthContext";
 import { useEffect, useState } from "react";
+import NotLogedIn from "../../../components/NotLogedIn";
 // import { useEffect, useRef } from "react";
 // import Chart from 'chart.js/auto';
 
@@ -81,81 +82,85 @@ export default function Page() {
         </div> }
         <div className="flex flex-col justify-between">
             <Header />
-            <main className="container mb-auto mx-auto mt-8">
-                <h2 className="text-3xl font-semibold mb-4">Dashboard</h2>
-                <div className="mb-8">
-                    <div className="flex flex-row justify-end items-center space-x-10">
-                        <span className="text-gray-700">Sort by:</span>
-                        <div>
-                            <label className="flex items-center space-x-2">
-                                <input type="radio" name="sort" value="date" className="form-radio" />
-                                <span>Date</span>
-                            </label>
-                            <label className="flex items-center space-x-2">
-                                <input type="radio" name="sort" value="name" className="form-radio" />
-                                <span>Name</span>
-                            </label>
-                            <label className="flex items-center space-x-2">
-                                <input type="radio" name="sort" value="size" className="form-radio" />
-                                <span>Size</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                {loading ? (
-                    <p>Loading...</p>
-                    ) : (
+            { authToken ? (
+                <main className="container mb-auto mx-auto mt-8">
+                    <h2 className="text-3xl font-semibold mb-4">Dashboard</h2>
                     <div className="mb-8">
-                        <div className="pt-10 flex flex-col items-start space-y-6">
+                        <div className="flex flex-row justify-end items-center space-x-10">
+                            <span className="text-gray-700">Sort by:</span>
                             <div>
-                                <h3 className="text-2xl font-semibold mb-2">Last Week</h3>
-                                <div className="flex space-x-4 items-center">
-                                    {dashboardData?.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex flex-col items-center"
-                                        >
-                                            <img
-                                                className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                                                alt={item.image_name}
-                                                src={`file://${item.output_image_path}`}
-                                            ></img>
-                                            <p className="mt-2 text-sm">Name: {item.image_name}</p>
-                                            <p className="text-sm">Timestamp: {item.timestamp}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-semibold mb-2">Last Month</h3>
-                                <div className="flex space-x-4 items-center">
-                                    {imageUrls.map((image, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex flex-col items-center"
-                                        >
-                                            <div
-                                                className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                                                style={{
-                                                    backgroundImage: `url(${image.url})`,
-                                                    backgroundSize: 'cover',
-                                                }}
-                                            ></div>
-                                            <p className="mt-2 text-sm">{image.caption}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                        <div className="mb-8 mt-10">
-                            <h2 className="text-3xl font-semibold mb-4">Usage Analytics</h2>
-                            <div className="bg-white h-64 w-96 p-4 rounded-lg shadow-md">
-                                {/* <canvas ref={chartRef} width={400} height={200}></canvas> */}
+                                <label className="flex items-center space-x-2">
+                                    <input type="radio" name="sort" value="date" className="form-radio" />
+                                    <span>Date</span>
+                                </label>
+                                <label className="flex items-center space-x-2">
+                                    <input type="radio" name="sort" value="name" className="form-radio" />
+                                    <span>Name</span>
+                                </label>
+                                <label className="flex items-center space-x-2">
+                                    <input type="radio" name="sort" value="size" className="form-radio" />
+                                    <span>Size</span>
+                                </label>
                             </div>
                         </div>
                     </div>
-                )}
-            </main>
+                    {loading ? (
+                        <p>Loading...</p>
+                        ) : (
+                        <div className="mb-8">
+                            <div className="pt-10 flex flex-col items-start space-y-6">
+                                <div>
+                                    <h3 className="text-2xl font-semibold mb-2">Last Week</h3>
+                                    <div className="flex space-x-4 items-center">
+                                        {dashboardData?.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex flex-col items-center"
+                                            >
+                                                <img
+                                                    className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
+                                                    alt={item.image_name}
+                                                    src={`file://${item.output_image_path}`}
+                                                ></img>
+                                                <p className="mt-2 text-sm">Name: {item.image_name}</p>
+                                                <p className="text-sm">Timestamp: {item.timestamp}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-semibold mb-2">Last Month</h3>
+                                    <div className="flex space-x-4 items-center">
+                                        {imageUrls.map((image, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex flex-col items-center"
+                                            >
+                                                <div
+                                                    className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
+                                                    style={{
+                                                        backgroundImage: `url(${image.url})`,
+                                                        backgroundSize: 'cover',
+                                                    }}
+                                                ></div>
+                                                <p className="mt-2 text-sm">{image.caption}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="mb-8 mt-10">
+                                <h2 className="text-3xl font-semibold mb-4">Usage Analytics</h2>
+                                <div className="bg-white h-64 w-96 p-4 rounded-lg shadow-md">
+                                    {/* <canvas ref={chartRef} width={400} height={200}></canvas> */}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </main>
+            ) : (
+                <NotLogedIn page='your dashboard' heading= 'Dashboard' />
+            )}
             <Footer />
         </div>
 
