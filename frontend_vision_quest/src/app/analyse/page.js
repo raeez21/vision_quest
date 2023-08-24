@@ -39,11 +39,11 @@ export default function Page() {
 
     if (name === 'algorithm') {
       if (value === 'ssd') {
-        setDatasetOptions(['coco', 'other_dataset_1', 'other_dataset_2']);
+        setDatasetOptions([{ value: 'coco', name: 'COCO'}]);
       } else if (value === 'yolov7') {
-        setDatasetOptions(['coco', 'voc', 'other_dataset']);
+        setDatasetOptions([{ value: 'coco', name: 'COCO'}]);
       } else if (value === 'f_rcnn') {
-        setDatasetOptions(['voc', 'other_dataset']);
+        setDatasetOptions([{ value: 'voc', name: 'Pascal VOC'}]);
       }
     }
 
@@ -174,7 +174,7 @@ export default function Page() {
                     onChange={handleInputChange}
                   >
                     <option value="">Select Algorithm</option>
-                    <option value="yolov7">YOLO</option>
+                    <option value="yolov7">YOLOV7</option>
                     <option value="f_rcnn">Faster R-CNN</option>
                     <option value="ssd">SSD</option>
                   </select>
@@ -191,8 +191,8 @@ export default function Page() {
                   >
                     <option value="">Select Dataset</option>
                     {datasetOptions.map((dataset) => (
-                      <option key={dataset} value={dataset}>
-                        {dataset}
+                      <option key={dataset.value} value={dataset.value}>
+                        {dataset.name}
                       </option>
                     ))}
                   </select>
