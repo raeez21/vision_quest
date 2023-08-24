@@ -2,15 +2,19 @@
 
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../components/AuthContext";
 import { SidebarMenu } from "../../../components/SidebarMenu";
 import NotLogedIn from "../../../components/NotLogedIn";
+import Webcam from "react-webcam";
 
 export default function Page() {
   const { authToken } = useAuth();
   const router = useRouter();
+  const webcamRef = useRef(null);
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [cameraActive, setCameraActive] = useState(false);
 
   const [formData, setFormData] = useState({
     imageFile: null,
@@ -22,6 +26,12 @@ export default function Page() {
   });
   const [datasetOptions, setDatasetOptions] = useState([]);
   const [analyseError, setAnalyseError] = useState('');
+
+  const handleCapture = () => {
+    const imageSrc = webcamRef.current.getScreenshot();
+    setCapturedImage(imageSrc);
+    setCameraActive(false);
+  };
   
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
@@ -44,7 +54,11 @@ export default function Page() {
     e.preventDefault();
   
     const formPayload = new FormData();
-    formPayload.append('image', formData.imageFile);
+    if (capturedImage) {
+      formPayload.append('image', capturedImage);
+    } else if (formData.imageFile) {
+      formPayload.append('image', formData.imageFile);
+    }
     formPayload.append('type', 'image');
     formPayload.append('objects', formData.objects);
     formPayload.append('confThreshold', formData.objectConfThreshold);
@@ -93,19 +107,58 @@ export default function Page() {
                 <h2 className="text-3xl font-bold text-gray-400 mb-4">Analyse New Image</h2>
                 <div className="mt-20 flex flex-col items-center justify-center">
                   <div className="items-center flex w-76 h-48 bg-gray-600 rounded-xl">
-                    <div className="mx-auto">
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="ml-14 text-gray-400" 
-                        name="imageFile"
-                        onChange={handleInputChange}
+                    {cameraActive ? (
+                      <Webcam
+                        ref={webcamRef}
+                        mirrored={true} // Mirror the camera view
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={{
+                          facingMode: 'environment', // Use the rear camera
+                        }}
+                        className="object-cover h-full w-full"
+                      />
+                    ) : (
+                      <div className="mx-auto">
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="ml-14 text-gray-400" 
+                          name="imageFile"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {!cameraActive && (
+                    <button 
+                      className="mt-4 font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded flex items-center"
+                      onClick={() => setCameraActive(true)}
+                    >
+                      Use Camera
+                    </button>
+                  )}
+
+                  {cameraActive && (
+                    <div className="mt-2 flex space-x-2">
+                      <button
+                        className="bg-slate-500 text-gray-900 px-4 py-2 rounded flex items-center"
+                        onClick={handleCapture}
+                      >
+                        Capture Image
+                      </button>
+                    </div>
+                  )}
+
+                  {capturedImage && (
+                    <div className="mt-4 flex">
+                      <img
+                        src={capturedImage}
+                        alt="Captured"
+                        style={{ width: '100px', height: '100px' }}
+                        className=""
                       />
                     </div>
-                  </div>
-                  <button className="mt-16 font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded flex items-center">
-                    Upload Image
-                  </button>
+                  )}
                 </div>
               </div>
 
