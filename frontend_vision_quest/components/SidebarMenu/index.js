@@ -11,7 +11,7 @@ export const SidebarMenu = () => {
     };
     return (
         <nav className="fixed left-0 top-0 bg-white w-1/4 shadow-md h-screen flex flex-col justify-center">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col">
                 <Link 
                     href="/dashboard"
                     className={`p-4 font-bold ${isActive('/dashboard')} `}>
