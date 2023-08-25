@@ -25,7 +25,7 @@ export default function Page() {
         </div> }
       <div className="flex flex-col h-screen justify-between">
         <Header />
-        <main className="container mb-auto mx-auto mt-8">
+        <main className="container mb-auto mx-auto mt-28">
           <div className="flex items-center mb-8 bg-gray-800 p-10 rounded-2xl space-x-4 ">
             <div className="flex-1">
               <h2 className="text-4xl font-bold text-gray-400 font-Poppins">Vision Quest</h2>

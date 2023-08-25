@@ -8,7 +8,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-gray-800 text-white py-4">
+      <header className="bg-gray-800 text-white py-4 fixed top-0 w-full">
         <nav className="container mx-auto flex justify-between items-center">
           <Link className="text-4xl font-bold text-gray-400 p-4" href="/">Vision Quest</Link>
           {username ? (

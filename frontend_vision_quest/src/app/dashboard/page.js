@@ -75,7 +75,7 @@ export default function Page() {
         <div className="flex flex-col justify-between">
             <Header />
             { authToken ? (
-                <main className="container mb-auto mx-auto mt-8">
+                <main className="container mb-auto mx-auto mt-28">
                     <h2 className="text-3xl font-semibold mb-4">Dashboard</h2>
                     <div className="mb-8">
                         <div className="flex flex-row justify-end items-center space-x-10">

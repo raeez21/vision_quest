@@ -100,7 +100,7 @@ export default function Page() {
       </div> }
       <div className="flex flex-col justify-between">
         <Header />
-        <main className="container mb-auto mx-auto mt-8">
+        <main className="container mb-auto mx-auto mt-28">
           { authToken ? (
             <form onSubmit={handleFormSubmit}>
               <div className="bg-gray-800 p-10 rounded-2xl text-center">
