@@ -41,10 +41,7 @@ export default function Page() {
 
     return (
       <>
-        { authToken && 
-            <div className='fixed ml-10 mt-28'>
-                <SidebarMenu />
-        </div> }
+        { authToken && <SidebarMenu />}
         <div className="flex flex-col justify-between">
             <Header />
             { authToken ? (
@@ -79,7 +76,7 @@ export default function Page() {
             ) : (
                 <NotLogedIn page='results page' heading='Results' />
             )}
-            <Footer />
+            <div className="z-10"><Footer /></div>
         </div>
 
       </>
