@@ -9,14 +9,6 @@ import NotLogedIn from "../../../components/NotLogedIn";
 // import { useEffect, useRef } from "react";
 // import Chart from 'chart.js/auto';
 
-const imageUrls = [
-    { url: 'image_url_1.jpg', caption: 'Image 1' },
-    { url: 'image_url_2.jpg', caption: 'Image 2' },
-    { url: 'image_url_3.jpg', caption: 'Image 3' },
-    { url: 'image_url_4.jpg', caption: 'Image 4' },
-    { url: 'image_url_5.jpg', caption: 'Image 5' },
-];
-
 export default function Page() {
     const { authToken } = useAuth()
 
@@ -108,45 +100,23 @@ export default function Page() {
                         <p>Loading...</p>
                         ) : (
                         <div className="mb-8">
-                            <div className="pt-10 flex flex-col items-start space-y-6">
-                                <div>
-                                    <h3 className="text-2xl font-semibold mb-2">Last Week</h3>
-                                    <div className="flex space-x-4 items-center">
-                                        {dashboardData?.map((item, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex flex-col items-center"
-                                            >
-                                                <img
-                                                    className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                                                    alt={item.image_name}
-                                                    src={`file://${item.output_image_path}`}
-                                                ></img>
-                                                <p className="mt-2 text-sm">Name: {item.image_name}</p>
-                                                <p className="text-sm">Timestamp: {item.timestamp}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div>
-                                    <h3 className="text-2xl font-semibold mb-2">Last Month</h3>
-                                    <div className="flex space-x-4 items-center">
-                                        {imageUrls.map((image, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex flex-col items-center"
-                                            >
-                                                <div
-                                                    className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                                                    style={{
-                                                        backgroundImage: `url(${image.url})`,
-                                                        backgroundSize: 'cover',
-                                                    }}
-                                                ></div>
-                                                <p className="mt-2 text-sm">{image.caption}</p>
-                                            </div>
-                                        ))}
-                                    </div>
+                            <div className="pt-4 flex flex-col items-start space-y-6">
+                                {/* <h3 className="text-2xl font-semibold mb-2">Last Week</h3> */}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                    {dashboardData?.map((item, index) => (
+                                        <div
+                                            key={index}
+                                            className="flex flex-col items-center bg-white p-4 rounded-xl shadow-md"
+                                        >
+                                            <img
+                                                className="flex-none w-48 h-32 md:w-56 md:h-48 bg-gray-300 rounded-xl mb-2"
+                                                alt={item.image_name}
+                                                src={`${item.output_image_path}`}
+                                            ></img>
+                                            <p className="mt-2 text-sm">Name: {item.image_name}</p>
+                                            <p className="text-sm">Timestamp: {item.timestamp}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
                             <div className="mb-8 mt-10">
