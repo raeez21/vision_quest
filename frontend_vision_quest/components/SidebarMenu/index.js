@@ -10,8 +10,8 @@ export const SidebarMenu = () => {
         return router === route ? 'bg-gray-600 text-slate-300 hover:bg-gray-400' : 'text-slate-500 hover:bg-gray-400';
     };
     return (
-        <nav className="fixed left-0 top-0 bg-white w-1/4 shadow-md">
-            <div className="flex flex-col space-y-4">
+        <nav className="fixed left-0 top-0 bg-white w-1/4 shadow-md h-screen flex flex-col justify-center">
+            <div className="flex flex-col">
                 <Link 
                     href="/dashboard"
                     className={`p-4 font-bold ${isActive('/dashboard')} `}>
@@ -23,9 +23,9 @@ export const SidebarMenu = () => {
                         Analyse
                 </Link>
                 <Link 
-                    href="/results"
-                    className={`p-4 font-bold ${isActive('/results')} `}>
-                        Results
+                    href="/profile"
+                    className={`p-4 font-bold ${isActive('/profile')} `}>
+                        Profile
                 </Link>
             </div>
         </nav>

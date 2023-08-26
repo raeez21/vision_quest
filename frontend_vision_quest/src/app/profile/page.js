@@ -19,13 +19,10 @@ function Profile() {
 
     return (
         <>
-            { authToken && 
-                <div className='fixed ml-10 mt-28'>
-                    <SidebarMenu />
-            </div> }
+            { authToken && <SidebarMenu />}
             <div className="flex flex-col h-screen justify-between">
                 <Header />
-                <main className="container mb-auto mx-auto mt-8">
+                <main className="container mb-auto mx-auto mt-28">
                     <div className="bg-gray-100 p-6 rounded-lg">
                         <h2 className="text-2xl font-bold mb-4">Your Profile</h2>
                         {authToken ? (
@@ -68,7 +65,7 @@ function Profile() {
                         )}
                     </div>
                 </main>
-                <Footer />
+                <div className="z-10"><Footer /></div>
             </div>
         </>
     );

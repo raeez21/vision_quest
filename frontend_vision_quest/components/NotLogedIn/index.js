@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const NotLogedIn = ({ page, heading }) => {
     return (
-        <main className="container mt-8 mb-auto mx-auto h-screen">
+        <main className="container mt-28 mb-auto mx-auto h-screen">
             <div className="bg-gray-100 p-6 rounded-lg">
                 <h2 className="text-2xl font-bold mb-4">{heading}</h2>
                 <p>Please sign in to view {page}.</p>

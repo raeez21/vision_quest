@@ -10,10 +10,10 @@ export const ObjectDetectorResults = ({ results }) => (
           </tr>
         </thead>
         <tbody>
-          {results.map((result, index) => (
+          {results?.map((result, index) => (
             <tr key={index}>
-              <td className="px-4 py-2">{result.object}</td>
-              <td className="px-4 py-2">{result.confidence}</td>
+              <td className="px-4 py-2">{result.object_class}</td>
+              <td className="px-4 py-2">{result.confidence_score}</td>
               <td className="px-4 py-2">{result.remarks}</td>
             </tr>
           ))}
