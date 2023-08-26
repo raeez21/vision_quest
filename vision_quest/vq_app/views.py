@@ -23,11 +23,14 @@ from django.conf import settings
 # import datetime
 from .utils import get_related, invoke_model
 from datetime import datetime
+from urllib.parse import urljoin
 # Add the root directory of the project to the Python path
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models')))
 
 # def members(request):
 #     return HttpResponse("Hello world!")
+
+server_address = "http://127.0.0.1:8000"
 
 
 @api_view(['POST'])
@@ -139,7 +142,14 @@ def results(request):
         except Jobs.DoesNotExist:
             return HttpResponseBadRequest("Job not found for the current user.")
         object_results = ObjectResult.objects.filter(job=job)
+        
         media = Media.objects.get(job=job)
+        print("otiput image path:",media.output_image_path)
+        relative_path = os.path.relpath(media.output_image_path, settings.MEDIA_ROOT)
+        print("relative path:",relative_path)
+        url_path = urljoin(settings.MEDIA_URL, relative_path.replace("\\", "/"))
+        url_path = urljoin(server_address, url_path.lstrip("/"))
+
         result_data = {
             "job_id": job.job_id,
             "options": job.options,
@@ -150,7 +160,7 @@ def results(request):
                 "bbox": obj.bbox
             } for obj in object_results],
             "media": {
-                "output_image_path": media.output_image_path,
+                "output_image_path": url_path,#media.output_image_path,
                 "image_size": media.image_size,
                 "image_name": media.image_name,
             },
@@ -162,6 +172,7 @@ def results(request):
             "image_name": job.media_set.first().image_name,
             "timestamp": job.timestamp
         } for job in jobs]
+    print("results data:",result_data)
     return JsonResponse(result_data, safe=False)
 # class AnalyzeView(LoginRequiredMixin, View):
 #     def post(self, request):
