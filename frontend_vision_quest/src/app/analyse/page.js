@@ -15,7 +15,6 @@ export default function Page() {
   const webcamRef = useRef(null);
   const [capturedImage, setCapturedImage] = useState(null);
   const [cameraActive, setCameraActive] = useState(false);
-
   const [formData, setFormData] = useState({
     imageFile: null,
     algorithm: '',
@@ -28,9 +27,16 @@ export default function Page() {
   const [analyseError, setAnalyseError] = useState('');
 
   const handleCapture = () => {
-    const imageSrc = webcamRef.current.getScreenshot();
-    setCapturedImage(imageSrc);
-    setCameraActive(false);
+    setCameraActive(true)
+    
+    // Capture an image after 4 seconds
+    setTimeout(() => {
+      const imageSrc = webcamRef.current.getScreenshot();
+      const blob = dataURItoBlob(imageSrc)
+      const capturedFile = new File([blob], 'captured_image.jpg', { type: 'image/jpeg' });
+      setCapturedImage(capturedFile);
+      setCameraActive(false);
+    }, 5000)
   };
   
   const handleInputChange = (e) => {
@@ -92,6 +98,18 @@ export default function Page() {
     }
   };
   
+  // Function to convert data URI to Blob
+  function dataURItoBlob(dataURI) {
+    const byteString = atob(dataURI.split(',')[1]);
+    const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+  }
+  
   return (
     <>
       { authToken && <SidebarMenu />}
@@ -129,13 +147,13 @@ export default function Page() {
                   {!cameraActive && (
                     <button 
                       className="mt-4 font-bold bg-slate-500 text-gray-900 px-4 py-2 rounded flex items-center"
-                      onClick={() => setCameraActive(true)}
+                      onClick={handleCapture}
                     >
                       Use Camera
                     </button>
                   )}
 
-                  {cameraActive && (
+                  {/* {cameraActive && (
                     <div className="mt-2 flex space-x-2">
                       <button
                         className="bg-slate-500 text-gray-900 px-4 py-2 rounded flex items-center"
@@ -144,7 +162,7 @@ export default function Page() {
                         Capture Image
                       </button>
                     </div>
-                  )}
+                  )} */}
 
                   {capturedImage && (
                     <div className="mt-4 flex">
