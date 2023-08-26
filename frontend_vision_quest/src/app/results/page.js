@@ -7,6 +7,8 @@ import { ProductDetectorResults } from "../../../components/ProductDetectorResul
 import { SidebarMenu } from "../../../components/SidebarMenu";
 import { useAuth } from "../../../components/AuthContext";
 import NotLogedIn from "../../../components/NotLogedIn";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const imageDetails = {
     name: 'image.jpg',
@@ -38,6 +40,47 @@ const relatedProducts = [
 
 export default function Page() {
     const { authToken } = useAuth()
+    const router = useSearchParams();
+    const job_id = router.get('job_id') 
+
+    const [results, setResults] = useState([]);
+
+    useEffect(() => {
+        if (job_id && authToken) {
+            const fetchResults = async () => {
+                try {
+                    const response = await fetch(`http://127.0.0.1:8000/results/?job_id=${job_id}`,{
+                        method: 'GET',
+                        headers: {
+                            Authorization: `Token ${authToken}`,
+                        },
+                    });
+                    if (response.ok) {
+                        const data = await response.json();
+                        // console.log(data); // Display response 
+                        setResults(data);
+                        
+                    } else {
+                        // API error 
+                        const data = await response.json();
+                        // setAnalyseError(data.error)
+                        console.log(data); 
+                    }
+                } catch (error) {
+                    console.error('Error fetching results:', error);
+                }
+            };
+            fetchResults();
+        }
+    },  [job_id, authToken]);
+
+    // if (!authToken) {
+    //     return <NotLogedIn page="results page" heading="Results" />;
+    // }
+
+    // if (!results) {
+    //     return <div>Loading...</div>; // Display a loading state while fetching results
+    // }
 
     return (
       <>
@@ -48,12 +91,12 @@ export default function Page() {
                 <main className="container  mb-auto mx-auto  mt-28">
                                         <h2 className="text-3xl font-semibold mb-4">Results</h2>
                     <div className="max-w-lg p-6 border border-gray-800 rounded-lg shadow-md">
-                        <img src="/path/to/uploaded/image.jpg" alt="Uploaded" className="w-full rounded-lg" />
-                        <ImageDetails name={imageDetails.name} size={imageDetails.size} />
+                        <img src={results.media?.output_image_path} alt="Uploaded" className="w-full rounded-lg" />
+                        <ImageDetails name={results.media?.image_name} size={results.media?.image_size} />
                     </div>
                     <div className="flex justify-around mt-28">
                         <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
-                            <ObjectDetectorResults results={objectDetectorResults} />
+                            <ObjectDetectorResults results={results.object_results} />
                         </div>
                         <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
                             <ProductDetectorResults results={productDetectorResults} />

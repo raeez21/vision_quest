@@ -78,9 +78,9 @@ export default function Page() {
       if (response.ok) {
         const data = await response.json();
         // Handle successful API response
-        console.log(data); // Display response 
-        
-        // router.push('/results'); // Redirect to results page
+        // console.log(data); // Display response 
+        const job_id = data.job_id;
+        router.push(`/results?job_id=${job_id}`); // Redirect to results page
       } else {
         // Handle API error 
         const data = await response.json();
