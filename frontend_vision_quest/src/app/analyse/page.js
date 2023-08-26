@@ -161,86 +161,92 @@ export default function Page() {
 
               <div className="mt-8 text-left">
                 <h2 className="text-3xl font-semibold mb-4 text-gray-800">Settings</h2>
-                {/* Algorithm */}
-                <div className="flex space-y-2">
-                  <label className="text-lg font-bold text-gray-700">Algorithm:</label>
-                  <select
-                    className="ml-96 form-select"
-                    name="algorithm"
-                    value={formData.algorithm}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select Algorithm</option>
-                    <option value="yolov7">YOLOV7</option>
-                    <option value="f_rcnn">Faster R-CNN</option>
-                    <option value="ssd">SSD</option>
-                  </select>
-                </div>
+                  <div className="flex flex-row">
+                    <div>
+                      <h4 className="text-lg font-bold text-gray-700">Algorithm:</h4>
+                      <h4 className="mt-10 text-lg font-bold text-gray-700">Dataset:</h4>
+                      <h4 className="mt-10 text-lg font-bold text-gray-700">Objects to Look For:</h4>
+                      <h4 className="mt-10 text-lg font-bold text-gray-700">Object Detector Confidence Threshold:</h4>
+                      <h4 className="mt-10 text-lg font-bold text-gray-700">Object Detector NMS Threshold:</h4>
+                    </div>
+                    <div className="ml-12">
+                      {/* Algorithm */}
+                      <div className="flex space-y-2">
+                        <select
+                          className="form-select"
+                          name="algorithm"
+                          value={formData.algorithm}
+                          onChange={handleInputChange}
+                        >
+                          <option value="">Select Algorithm</option>
+                          <option value="yolov7">YOLOV7</option>
+                          <option value="f_rcnn">Faster R-CNN</option>
+                          <option value="ssd">SSD</option>
+                        </select>
+                      </div>
 
-                {/* Dataset */}
-                <div className="mt-10 flex space-y-2">
-                  <label className="text-lg font-bold text-gray-700">Dataset:</label>
-                  <select
-                    className="ml-96 form-select"
-                    name="dataset"
-                    value={formData.dataset}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select Dataset</option>
-                    {datasetOptions.map((dataset) => (
-                      <option key={dataset.value} value={dataset.value}>
-                        {dataset.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                      {/* Dataset */}
+                      <div className="mt-10 flex space-y-2">
+                        <select
+                          className="form-select"
+                          name="dataset"
+                          value={formData.dataset}
+                          onChange={handleInputChange}
+                        >
+                          <option value="">Select Dataset</option>
+                          {datasetOptions.map((dataset) => (
+                            <option key={dataset.value} value={dataset.value}>
+                              {dataset.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                {/* Objects to Look For */}
-                <div className="mt-10 flex space-y-2">
-                  <h4 className="text-lg font-bold text-gray-700">Objects to Look For:</h4>
-                  <input
-                    type="text"
-                    className="ml-72 form-input"
-                    placeholder="Chairs, Cups, Computers"
-                    name="objects"
-                    value={formData.objects}
-                    onChange={handleInputChange}
-                  />
-                </div>
-                {/* Object Detector Confidence Threshold */}
-                <div className="mt-10 flex space-y-2">
-                  <h4 className="text-lg font-bold text-gray-700">Object Detector Confidence Threshold:</h4>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="number"
-                      className="ml-28 form-input w-16"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      name="objectConfThreshold"
-                      value={formData.objectConfThreshold}
-                      onChange={handleInputChange}
-                    />
-                    <span className="text-gray-400">Enter values between 0 and 1</span>
+                      {/* Objects to Look For */}
+                      <div className="mt-12 flex space-y-2">
+                        <input
+                          type="text"
+                          className="form-input"
+                          placeholder="Chairs, Cups, Computers"
+                          name="objects"
+                          value={formData.objects}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      {/* Object Detector Confidence Threshold */}
+                      <div className="mt-12 flex space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="number"
+                            className="form-input w-16"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            name="objectConfThreshold"
+                            value={formData.objectConfThreshold}
+                            onChange={handleInputChange}
+                          />
+                          <span className="text-gray-400">Enter values between 0 and 1</span>
+                        </div>
+                      </div>
+                      {/* Product Detector Confidence Threshold */}
+                      <div className="mt-10 mb-12 flex space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="number"
+                            className="form-input w-16"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            name="productConfThreshold"
+                            value={formData.productConfThreshold}
+                            onChange={handleInputChange}
+                          />
+                          <span className="text-gray-400">Enter values between 0 and 1</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                {/* Product Detector Confidence Threshold */}
-                <div className="mt-10 mb-12 flex space-y-2">
-                  <h4 className="text-lg font-bold text-gray-700">Object Detector NMS Threshold:</h4>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="number"
-                      className="ml-44 form-input w-16"
-                      min="0"
-                      max="1"
-                      step="0.01"
-                      name="productConfThreshold"
-                      value={formData.productConfThreshold}
-                      onChange={handleInputChange}
-                    />
-                    <span className="text-gray-400">Enter values between 0 and 1</span>
-                  </div>
-                </div>
               </div>
               {analyseError && <div className="text-red-500 text-center mb-2">{analyseError}</div>}
               <div className="pb-10 text-center ">
