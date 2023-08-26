@@ -23,9 +23,9 @@ export const SidebarMenu = () => {
                         Analyse
                 </Link>
                 <Link 
-                    href="/results"
-                    className={`p-4 font-bold ${isActive('/results')} `}>
-                        Results
+                    href="/profile"
+                    className={`p-4 font-bold ${isActive('/profile')} `}>
+                        Profile
                 </Link>
             </div>
         </nav>
