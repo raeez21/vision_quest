@@ -24,6 +24,9 @@ from django.conf import settings
 from .utils import get_related, invoke_model
 from datetime import datetime
 from urllib.parse import urljoin
+from django.db.models import Count
+from django.db.models.functions import TruncDate
+from datetime import timedelta
 # Add the root directory of the project to the Python path
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models')))
 
@@ -123,10 +126,18 @@ def dashboard(request):
     for media_entry in media_entries:
         formatted_timestamp = media_entry.job.timestamp.strftime('%d-%m-%Y')
         result_list.append({
+            " job_id": media_entry.job.job_id,
             "image_name": media_entry.image_name,
             "output_image_path": media_entry.output_image_path,
-            "timestamp": formatted_timestamp
+            "timestamp": formatted_timestamp,
         })
+
+    jobs_daily_count = Jobs.objects.filter(user=user).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('job_id')).order_by('-date')
+    analytics = []
+    for entry in jobs_daily_count:
+        formatted_date = entry['date'].strftime('%d-%m-%Y')
+        analytics.append([formatted_date, entry['count']])
+    result_list.append(analytics)
     print("result LISt:",result_list)
     return JsonResponse(result_list, safe=False)
 
