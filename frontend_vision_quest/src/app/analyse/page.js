@@ -8,6 +8,10 @@ import { useAuth } from "../../../components/AuthContext";
 import { SidebarMenu } from "../../../components/SidebarMenu";
 import NotLogedIn from "../../../components/NotLogedIn";
 import Webcam from "react-webcam";
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
+
+const animatedComponents = makeAnimated();
 
 export default function Page() {
   const { authToken } = useAuth();
@@ -24,7 +28,16 @@ export default function Page() {
     productConfThreshold: '',
   });
   const [datasetOptions, setDatasetOptions] = useState([]);
+  const [objectOptions, setObjectOptions] = useState([]);
   const [analyseError, setAnalyseError] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const ssdObjectList = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'street sign', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'hat', 'backpack', 'umbrella', 'shoe', 'eye glasses', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'plate', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'mirror', 'dining table', 'window', 'desk', 'toilet', 'door', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'blender', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush', 'hair brush']
+  const yolov7ObjectList = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
+  const frcnnObjectList = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor'];
+
+  const options = objectOptions.map(obj => ({ value: obj, label: obj }));
+  const formattedSelectedObjects = selectedOption?.map(obj => obj.value).join(',');
 
   const handleCapture = () => {
     setCameraActive(true)
@@ -46,10 +59,13 @@ export default function Page() {
     if (name === 'algorithm') {
       if (value === 'ssd') {
         setDatasetOptions([{ value: 'coco', name: 'COCO'}]);
+        setObjectOptions(ssdObjectList);
       } else if (value === 'yolov7') {
         setDatasetOptions([{ value: 'coco', name: 'COCO'}]);
+        setObjectOptions(yolov7ObjectList);
       } else if (value === 'f_rcnn') {
         setDatasetOptions([{ value: 'voc', name: 'Pascal VOC'}]);
+        setObjectOptions(frcnnObjectList);
       }
     }
 
@@ -66,7 +82,7 @@ export default function Page() {
       formPayload.append('image', formData.imageFile);
     }
     formPayload.append('type', 'image');
-    formPayload.append('objects', formData.objects);
+    formPayload.append('objects', formattedSelectedObjects);
     formPayload.append('confThreshold', formData.objectConfThreshold);
     formPayload.append('nmsThreshold', formData.productConfThreshold);
     formPayload.append('model', formData.algorithm);
@@ -222,14 +238,15 @@ export default function Page() {
 
                       {/* Objects to Look For */}
                       <div className="mt-12 flex space-y-2">
-                        <input
-                          type="text"
-                          className="form-input"
-                          placeholder="Chairs, Cups, Computers"
-                          name="objects"
-                          value={formData.objects}
-                          onChange={handleInputChange}
-                        />
+                      <Select
+                        isMulti
+                        className=""
+                        components={animatedComponents}
+                        placeholder="Select objects"
+                        defaultValue={selectedOption}
+                        onChange={setSelectedOption}
+                        options={options}
+                      />
                       </div>
                       {/* Object Detector Confidence Threshold */}
                       <div className="mt-12 flex space-y-2">
