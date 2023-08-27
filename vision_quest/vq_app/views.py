@@ -7,9 +7,10 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework_simplejwt.tokens import RefreshToken
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate, login
-from .serializers import UserSerializer
+from .serializers import UserSerializer, ProfileSerializer
 from .models import Media, Jobs, ObjectResult
 import sys
 import os
@@ -21,12 +22,11 @@ from django.views.generic import View
 from django.core.files.storage import default_storage
 from django.conf import settings
 # import datetime
-from .utils import get_related, invoke_model
+from .utils import get_related, invoke_model, usage_analytics
 from datetime import datetime
 from urllib.parse import urljoin
-from django.db.models import Count
-from django.db.models.functions import TruncDate
-from datetime import timedelta
+from rest_framework import generics
+
 # Add the root directory of the project to the Python path
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models')))
 
@@ -43,6 +43,7 @@ def signup(request):
         user = serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def login(request):
@@ -61,7 +62,12 @@ def login(request):
     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def logout(request):
+    user = request.user
+    Token.objects.filter(user=user).delete()
+    return Response({'detail': 'Successfully logged out.'}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
@@ -131,13 +137,8 @@ def dashboard(request):
             "output_image_path": media_entry.output_image_path,
             "timestamp": formatted_timestamp,
         })
-
-    jobs_daily_count = Jobs.objects.filter(user=user).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('job_id')).order_by('-date')
-    analytics = []
-    for entry in jobs_daily_count:
-        formatted_date = entry['date'].strftime('%d-%m-%Y')
-        analytics.append([formatted_date, entry['count']])
-    result_list.append(analytics)
+    analytics_data = usage_analytics(user)
+    result_list.append(analytics_data)
     print("result LISt:",result_list)
     return JsonResponse(result_list, safe=False)
 
@@ -185,6 +186,16 @@ def results(request):
         } for job in jobs]
     print("results data:",result_data)
     return JsonResponse(result_data, safe=False)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def profile(request):
+    user = request.user
+    serializer = ProfileSerializer(user)
+    return Response(serializer.data)
+
 # class AnalyzeView(LoginRequiredMixin, View):
 #     def post(self, request):
 #         image_file = request.FILES.get('image')
