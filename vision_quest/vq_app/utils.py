@@ -1,6 +1,6 @@
 
 from serpapi import GoogleSearch
-from .models import ObjectResult, RelatedProducts
+from .models import ObjectResult, RelatedProducts, Jobs
 # import sys
 # sys.path.insert(0, 'models/yolov7_coco')
 from ml_models.ssd_coco import ssd_coco
@@ -8,6 +8,12 @@ from ml_models.yolov7_coco import yolov7_coco
 from ml_models.frcnn_voc import frcnn_voc
 from .change_cwd_context import change_cwd
 import os
+from django.db.models import Count, Avg, Max, Sum
+from django.db.models.functions import TruncDate
+from datetime import timedelta
+from django.db.models import F, IntegerField
+from django.db.models.functions import Coalesce, Cast
+
 
 PERFORM_RELATED = False
 api_key = "66678e1ad49d4ce51eadc41af1aea56d15f7d078807042cc51ac798f8dd60508"
@@ -107,3 +113,25 @@ def invoke_model(job, image_input_path, image_output_path, options):
         # print("full related:",full_related_results)
     print("respone:",response_data)
     return response_data
+
+
+def usage_analytics(user):
+    jobs_daily_count = Jobs.objects.filter(user=user).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('job_id')).order_by('-date')
+    graph_data = []
+    for entry in jobs_daily_count:
+        formatted_date = entry['date'].strftime('%d-%m-%Y')
+        graph_data.append([formatted_date, entry['count']])
+
+    # Get usage analytics data
+    jobs_performed = Jobs.objects.filter(user=user).count()
+    average_daily_jobs = Jobs.objects.filter(user=user).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('job_id')).aggregate(avg_count=Coalesce(Cast(Avg('count'), output_field=IntegerField()) , 0))['avg_count']
+    max_jobs_in_day = Jobs.objects.filter(user=user).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('job_id')).aggregate(max_count=Coalesce(Cast(Max('count'), output_field=IntegerField()), 0))['max_count']
+
+    # Prepare the usage analytics response
+    analytics_data = {
+        "graph_data": graph_data,
+        "jobs_performed": jobs_performed,
+        "average_daily_jobs": average_daily_jobs,
+        "max_jobs_in_day": max_jobs_in_day,
+    }
+    return analytics_data

@@ -1,11 +1,17 @@
 from django.db import models
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 
+class CustomUser(AbstractUser):
+    billing_plan = models.CharField(max_length=255)
+    class Meta:
+        db_table = "CustomUser"
 
 class Jobs(models.Model):
     job_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     options = models.JSONField()
     timestamp = models.DateTimeField(auto_now_add=True)
     class Meta:
