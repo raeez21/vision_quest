@@ -6,6 +6,7 @@ import { SidebarMenu } from "../../../components/SidebarMenu";
 import { useAuth } from "../../../components/AuthContext";
 import { useEffect, useState } from "react";
 import NotLogedIn from "../../../components/NotLogedIn";
+import Link from "next/link";
 // import { useEffect, useRef } from "react";
 // import Chart from 'chart.js/auto';
 
@@ -97,23 +98,26 @@ export default function Page() {
                         <p>Loading...</p>
                         ) : (
                         <div className="mb-8">
-                            <div className="pt-4 flex flex-col items-start space-y-6">
-                                {/* <h3 className="text-2xl font-semibold mb-2">Last Week</h3> */}
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                    {dashboardData?.map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex flex-col items-center bg-white p-4 rounded-xl shadow-md"
-                                        >
-                                            <img
-                                                className="flex-none w-48 h-32 md:w-56 md:h-48 bg-gray-300 rounded-xl mb-2"
-                                                alt={item.image_name}
-                                                src={`${item.output_image_path}`}
-                                            ></img>
-                                            <p className="mt-2 text-sm">Name: {item.image_name}</p>
-                                            <p className="text-sm">Timestamp: {item.timestamp}</p>
-                                        </div>
-                                    ))}
+                            <div className="flex justify-center items-center">
+                                <div className="flex flex-col items-start space-y-6">
+                                    {/* <h3 className="text-2xl font-semibold mb-2">Last Week</h3> */}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                        {dashboardData?.map((item, index) => (
+                                            <Link
+                                                href={`/results/?job_id=${item[' job_id']}`}
+                                                key={index}
+                                                className="flex flex-col items-center bg-white p-4 rounded-xl shadow-md"
+                                            >
+                                                <img
+                                                    className="flex-none w-48 h-32 md:w-56 md:h-48 bg-gray-300 rounded-xl mb-2"
+                                                    alt={item.image_name}
+                                                    src={`${item.output_image_path}`}
+                                                ></img>
+                                                <p className="mt-2 text-sm">Name: {item.image_name}</p>
+                                                <p className="text-sm">Timestamp: {item.timestamp}</p>
+                                            </Link>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                             <div className="mb-8 mt-10">
