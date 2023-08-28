@@ -5,13 +5,42 @@ import Footer from '../../../components/Footer';
 import { useAuth } from '../../../components/AuthContext';
 import { SidebarMenu } from '../../../components/SidebarMenu';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 function Profile() {
     const { authToken, logout } = useAuth()
+    const [profileData, setProfileData] = useState(null);
 
     const handleLogout = () => {
         logout(); 
     };
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/profile/', {
+                    method: 'GET',
+                    headers: {
+                        Authorization: `Token ${authToken}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setProfileData(data);
+                } else {
+                    // Handle API error
+                    console.error('Profile API error:', response);
+                }
+            } catch (error) {
+                console.error('Profile API error:', error);
+            }
+        };
+
+        if (authToken) {
+            fetchProfile();
+        }
+    }, [authToken]);
 
     return (
         <>
@@ -24,16 +53,16 @@ function Profile() {
                         {authToken ? (
                             <div>
                                 <p className="mb-2">
-                                    <span className="font-semibold">Username:</span> user
+                                    <span className="font-semibold">Username:</span> {profileData?.username}
                                 </p>
                                 <p className="mb-2">
-                                    <span className="font-semibold">Email:</span> abc@g.com
+                                    <span className="font-semibold">Email:</span> {profileData?.email}
                                 </p>
                                 <p className="mb-2">
-                                    <span className="font-semibold">First Name:</span> name1
+                                    <span className="font-semibold">First Name:</span> {profileData?.first_name}
                                 </p>
                                 <p>
-                                    <span className="font-semibold">Last Name:</span> name2
+                                    <span className="font-semibold">Last Name:</span> {profileData?.last_name}
                                 </p>
                                 {/* <p>
                                     <span className="font-semibold">Last Name:</span> {session.user.last_name}
