@@ -36,7 +36,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'vq_app.CustomUser' 
 # Application definition
 
 INSTALLED_APPS = [
@@ -107,7 +106,7 @@ WSGI_APPLICATION = 'vision_quest.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'vq_dev1',
+        'NAME': 'vq_dev2',
         'USER': 'postgres',
         'PASSWORD': os.environ.get('DJANGO_DB_PASSWORD'),
         'HOST': '127.0.0.1',

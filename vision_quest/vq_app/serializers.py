@@ -1,20 +1,19 @@
 from rest_framework import serializers
-#from django.contrib.auth.models import User
-from .models import CustomUser
+from django.contrib.auth.models import User
+#from .models import CustomUser
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
+        model = User
         fields = ('id', 'username', 'email', 'first_name', 'last_name','password')
         #extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
-        user = CustomUser(
+        user = User(
             email=validated_data['email'],
             username=validated_data['username'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            billing_plan="Free Tier"
         )
         user.set_password(validated_data['password'])
         user.save()
@@ -26,5 +25,5 @@ class ProfileSerializer(serializers.ModelSerializer):
     #date_joined = serializers.DateTimeField(source='date_joined', read_only=True)
 
     class Meta:
-        model = CustomUser
-        fields = ['first_name', 'last_name', 'email', 'username', 'last_login', 'date_joined', 'billing_plan']
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username', 'last_login', 'date_joined']
