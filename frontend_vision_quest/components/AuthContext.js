@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const AuthContext = createContext();
@@ -7,6 +8,8 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState('');
   const [username, setUsername] = useState('');
+  
+  const router = useRouter();
 
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
@@ -24,11 +27,33 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('username', username);
   };
 
-  const logout = () => {
-    setAuthToken(null);
-    setUsername('');
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('username');
+  const logout = async () => {
+    try {
+      // Call the logout API
+      const response = await fetch('http://127.0.0.1:8000/logout/', {
+        method: 'POST',
+        headers: {
+          Authorization: `Token ${authToken}`,
+        },
+      });
+  
+      if (response.ok) {
+        // Clear user data and token
+        setAuthToken(null);
+        setUsername('');
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('username');
+        router.push('/'); 
+        const data = await response.json();
+        console.log(data)
+      } else {
+        // Handle API error
+        const data = await response.json();
+        console.error('Logout error:', data);
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (

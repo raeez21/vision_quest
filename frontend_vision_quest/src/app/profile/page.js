@@ -3,18 +3,14 @@
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import { useAuth } from '../../../components/AuthContext';
-import { useRouter } from 'next/navigation';
 import { SidebarMenu } from '../../../components/SidebarMenu';
 import Link from 'next/link';
 
 function Profile() {
     const { authToken, logout } = useAuth()
-    const router = useRouter();
 
     const handleLogout = () => {
         logout(); 
-        router.push('/'); 
-        console.log("Log out success!!")
     };
 
     return (
