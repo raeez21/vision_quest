@@ -89,10 +89,12 @@ export default function Page() {
             <Header />
             { authToken ? (
                 <main className="container  mb-auto mx-auto  mt-28">
-                                        <h2 className="text-3xl font-semibold mb-4">Results</h2>
-                    <div className="max-w-lg p-6 border border-gray-800 rounded-lg shadow-md">
-                        <img src={results.media?.output_image_path} alt="Uploaded" className="w-full rounded-lg" />
-                        <ImageDetails name={results.media?.image_name} size={results.media?.image_size} />
+                    <h2 className="text-3xl font-semibold mb-4">Results</h2>
+                    <div className="flex flex-row justify-center">
+                        <div className="max-w-4xl p-6 border border-gray-800 rounded-lg shadow-md">
+                            <img src={results.media?.output_image_path} alt="Uploaded" className="w-full rounded-lg" />
+                            <ImageDetails name={results.media?.image_name} size={results.media?.image_size} />
+                        </div>
                     </div>
                     <div className="flex justify-around mt-28">
                         <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
