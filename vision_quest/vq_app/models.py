@@ -39,9 +39,8 @@ class ProductResult(models.Model):
     job = models.ForeignKey(Jobs, on_delete=models.CASCADE)
     product_name = models.CharField(max_length=255)
     confidence_score = models.FloatField()
-    brand_name = models.CharField(max_length=255)
-    price = models.FloatField()
     link = models.URLField()
+    remarks = models.TextField()
     class Meta:
         db_table = "ProductResult"
 

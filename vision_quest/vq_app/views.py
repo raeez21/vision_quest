@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 #from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate, login
 from .serializers import UserSerializer, ProfileSerializer
-from .models import Media, Jobs, ObjectResult
+from .models import Media, Jobs, ObjectResult, ProductResult, RelatedProducts
 import sys
 import os
 from django.http import JsonResponse
@@ -22,9 +22,8 @@ from django.views.generic import View
 from django.core.files.storage import default_storage
 from django.conf import settings
 # import datetime
-from .utils import get_related, invoke_model, usage_analytics
+from .utils import get_related, invoke_model, usage_analytics, get_url_path
 from datetime import datetime
-from urllib.parse import urljoin
 from rest_framework import generics
 import json
 
@@ -82,24 +81,27 @@ def analyze(request):
         if image_file:
             user_name = request.user.username
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-            type = request.data.get("type")
-            model = request.data.get('model')
-            dataset = request.data.get('dataset')
-            objects_str = request.data.get('objects', [])  # Get list of objects
-            objects = objects_str.split(',') if objects_str else []
-            confThreshold_str = request.data.get('confThreshold')  # Get confThreshold
-            confThreshold = float(confThreshold_str) if confThreshold_str else 0.5
-            nmsThreshold_str = request.data.get('nmsThreshold')
-            nmsThreshold = float(nmsThreshold_str) if nmsThreshold_str else 0.5
-            doProduct = request.data.get('doProduct')
-            productConf = None
-            productNms = None
-            if doProduct:
-                productConf = request.data.get('productConf')
-                productNms = request.data.get('productNms')
+            taskType = request.data.get("taskType")
+            doRelated = request.data.get("doRelated")
+            if taskType == "object":
+                model = request.data.get('model')
+                dataset = request.data.get('dataset')
+                objects_str = request.data.get('objects', [])  # Get list of objects
+                objects = objects_str.split(',') if objects_str else []
+                confThreshold_str = request.data.get('confThreshold')  # Get confThreshold
+                confThreshold = float(confThreshold_str) if confThreshold_str else 0.5
+                nmsThreshold_str = request.data.get('nmsThreshold')
+                nmsThreshold = float(nmsThreshold_str) if nmsThreshold_str else 0.5
+                options = {'taskType':taskType, 'model':model, 'dataset':dataset, 'objects': objects, 'ConfidenceThreshold': confThreshold, \
+                      'NmsThreshold': nmsThreshold, "doRelated":doRelated}
 
-            options = {'model':model,'dataset':dataset,'objects': objects, 'ConfidenceThreshold': confThreshold, \
-                      'NmsThreshold': nmsThreshold, 'doProduct': doProduct, 'productConf':productConf, 'productNms':productNms}
+            elif taskType == "product":
+
+                confThreshold_str = request.data.get('confThreshold')
+                confThreshold = float(confThreshold_str) if confThreshold_str else 0.5
+                nmsThreshold_str = request.data.get('nmsThreshold')
+                nmsThreshold = float(nmsThreshold_str) if nmsThreshold_str else 0.5
+                options = {'taskType':taskType, 'ConfidenceThreshold': confThreshold, 'NmsThreshold': nmsThreshold, "doRelated":doRelated}
 
             #Save Media Model
             media = Media()
@@ -140,11 +142,15 @@ def dashboard(request):
 
     jobs_list = []
     for media_entry in media_entries:
+
+        output_url_path = get_url_path(media_entry.output_image_path)
+
         formatted_timestamp = media_entry.job.timestamp.strftime('%d-%m-%Y')
+        
         jobs_list.append({
             " job_id": media_entry.job.job_id,
             "image_name": media_entry.image_name,
-            "output_image_path": media_entry.output_image_path,
+            "output_image_path": output_url_path,
             "timestamp": formatted_timestamp,
         })
     analytics_data = usage_analytics(user)
@@ -195,29 +201,38 @@ def results(request):
             job = Jobs.objects.get(pk=job_id, user=user)
         except Jobs.DoesNotExist:
             return HttpResponseBadRequest("Job not found for the current user.")
-        object_results = ObjectResult.objects.filter(job=job)
         
+        task_type = job.options.get("taskType")
+        if task_type == "object":
+            object_results = ObjectResult.objects.filter(job=job)
+            pred_result = [{"object_class": obj.object_class, "confidence_score": obj.confidence_score, "remarks": obj.remarks, "bbox": obj.bbox} for obj in object_results]
+        elif task_type == "product":
+            product_results = ProductResult.objects.filter(job=job)
+            pred_result = [{"product_name": prod.product_name, "confidence_score": prod.confidence_score, "link": prod.link} for prod in product_results]
         media = Media.objects.get(job=job)
-        print("otiput image path:",media.output_image_path)
-        relative_path = os.path.relpath(media.output_image_path, settings.MEDIA_ROOT)
-        print("relative path:",relative_path)
-        url_path = urljoin(settings.MEDIA_URL, relative_path.replace("\\", "/"))
-        url_path = urljoin(server_address, url_path.lstrip("/"))
-
+        
+        # relative_path = os.path.relpath(media.output_image_path, settings.MEDIA_ROOT)
+        # url_path = urljoin(settings.MEDIA_URL, relative_path.replace("\\", "/"))
+        # url_path = urljoin(server_address, url_path.lstrip("/"))
+        url_path = get_url_path(media.output_image_path)
+        related_results = RelatedProducts.objects.filter(job=job)
+        related_results_list = []
+        for related_result in related_results:
+            related_results_list.append({
+                "title": related_result.title,
+                "link": related_result.link,
+                "image_link": related_result.image_link
+            })
         result_data = {
             "job_id": job.job_id,
             "options": job.options,
-            "object_results": [{
-                "object_class": obj.object_class,
-                "confidence_score": obj.confidence_score,
-                "remarks": obj.remarks,
-                "bbox": obj.bbox
-            } for obj in object_results],
+            "prediction_results": pred_result,
             "media": {
                 "output_image_path": url_path,#media.output_image_path,
                 "image_size": media.image_size,
                 "image_name": media.image_name,
             },
+            "related_results": related_results_list
         }
     else:
         jobs = Jobs.objects.filter(user=user)

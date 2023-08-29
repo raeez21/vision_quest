@@ -1,6 +1,6 @@
 
 from serpapi import GoogleSearch
-from .models import ObjectResult, RelatedProducts, Jobs
+from .models import ObjectResult, RelatedProducts, Jobs, ProductResult
 # import sys
 # sys.path.insert(0, 'models/yolov7_coco')
 from ml_models.ssd_coco import ssd_coco
@@ -13,15 +13,37 @@ from django.db.models.functions import TruncDate
 from datetime import timedelta
 from django.db.models import F, IntegerField
 from django.db.models.functions import Coalesce, Cast
+from urllib.parse import urljoin
+from roboflow import Roboflow
+from django.conf import settings
+
+PERFORM_RELATED = True
+api_key = "bbc2961b414bf10ab233c7c80919fa0aefa5cbbb1b00fcd3e185aaf857697ad4"
+
+rf = Roboflow(api_key="hsi4SvXlQx8ixdpbFSYW")
+project = rf.workspace().project("nike-shoe-detector-j1bln")
+rf_model = project.version(1).model
 
 
-PERFORM_RELATED = False
-api_key = "66678e1ad49d4ce51eadc41af1aea56d15f7d078807042cc51ac798f8dd60508"
+link_dict = {"Nike Alphafly":"https://www.nike.com/gb/running/alphafly",
+             "Nike Lebron 09": "https://www.nike.com/gb/t/lebron-9-low-shoes-7dfd7R",
+             "Nike Air Force": "https://www.nike.com/gb/w/air-force-1-shoes-5sj3yzy7ok",
+             "Nike Air Max": "https://www.nike.com/gb/w/air-max-shoes-a6d8hzy7ok"
+             }
+
+
+def get_url_path(path):
+    server_address = "http://127.0.0.1:8000"
+    relative_path = os.path.relpath(path, settings.MEDIA_ROOT)
+    url_path = urljoin(settings.MEDIA_URL, relative_path.replace("\\", "/"))
+    url_path = urljoin(server_address, url_path.lstrip("/"))
+    return url_path
+
 
 def image_search(obj_name):
     params = {
 
-        "api_key": "66678e1ad49d4ce51eadc41af1aea56d15f7d078807042cc51ac798f8dd60508",
+        "api_key": api_key,
         "engine": "google_images",
         "google_domain": "google.co.uk",
         "q": obj_name,
@@ -64,54 +86,112 @@ def get_related(obj_name, job):
         return selected_fields
 
 
+def product_det(image_input_path, image_output_path, confThresh, nmsThresh):
+    prediction = rf_model.predict(image_input_path, confidence=confThresh, overlap=nmsThresh)#.save("prediction.jpg"))
+    
+    prodInfo = []
+    for pred in prediction.json()["predictions"]:
+        prodInfo.append([pred["class"], round(pred["confidence"]*100,2), link_dict[pred["class"]]])
+    # product_name = pred.json()["predictions"][0]["class"]
+    # confidence_score = pred.json()["predictions"][0]["confidence"]
+    # link = link_dict[product_name]
+    prediction.save(image_output_path)
+    return prodInfo
 
 def invoke_model(job, image_input_path, image_output_path, options):
 
     print("Invoking the model with options:",options)
-    if options['model']=='ssd' and options['dataset'] == 'coco':
-        objectInfo = ssd_coco.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
-    elif options['model']=='yolov7' and options['dataset'] == 'coco':
-        with change_cwd(os.path.join(os.getcwd(), "ml_models\yolov7_coco")):
-            objectInfo = yolov7_coco.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
-    elif options['model'] == 'f_rcnn' and options['dataset'] == 'voc':
-        objectInfo = frcnn_voc.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
-    print("object Info:",objectInfo)
-    objectInfo_serializable = [[bbox.tolist(), label, conf] for bbox, label,conf in objectInfo]
-    response_data = {
-            'message': 'Image analysis complete.',
-            'job_id':job.job_id,
-            'result': objectInfo_serializable,  
-        }
-    full_related_results = []
-    unique_classes = set()
-    if not objectInfo:
-        # No objects detected, add a row with remarks
-        object_result = ObjectResult(
-                    job=job,
-                    bbox=[0, 0, 0, 0],  # Default bbox values
-                    object_class='No objects detected',
-                    confidence_score=0.0,
-                    remarks='No objects detected with the existing options',
-                )
-        object_result.save()
-    else:
-        for obj_info in objectInfo:
-            print("type of bbkox 0",type(obj_info[0]))
+    PERFORM_RELATED = True if options["doRelated"]=='true' else False
+    print("perddd",PERFORM_RELATED)
+    if options['taskType'] == 'object':
+        if options['model']=='ssd' and options['dataset'] == 'coco':
+            objectInfo = ssd_coco.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
+        elif options['model']=='yolov7' and options['dataset'] == 'coco':
+            with change_cwd(os.path.join(os.getcwd(), "ml_models\yolov7_coco")):
+                objectInfo = yolov7_coco.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
+        elif options['model'] == 'f_rcnn' and options['dataset'] == 'voc':
+            objectInfo = frcnn_voc.detect(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'], options['objects'])
+        print("object Info:",objectInfo)
+        objectInfo_serializable = [[bbox.tolist(), label, conf] for bbox, label,conf in objectInfo]
+        response_data = {
+                'message': 'Image analysis complete.',
+                'job_id':job.job_id,
+                'result': objectInfo_serializable,  
+            }
+        full_related_results = []
+        unique_classes = set()
+        if not objectInfo:
+            # No objects detected, add a row with remarks
             object_result = ObjectResult(
-                        job = job,
-                        bbox = obj_info[0].tolist(),
-                        object_class = obj_info[1],
-                        confidence_score = float(obj_info[2]),
-                        remarks = "",
+                        job=job,
+                        bbox=[0, 0, 0, 0],  # Default bbox values
+                        object_class='No objects detected',
+                        confidence_score=0.0,
+                        remarks='No objects detected with the existing options',
                     )
             object_result.save()
-            unique_classes.add(obj_info[1])
-        for obj_name in unique_classes:
-            if obj_name != 'person' and PERFORM_RELATED:
-                related_results = get_related(obj_name, job)
-                full_related_results.append(related_results)
-        # print("full related:",full_related_results)
-    print("respone:",response_data)
+        else:
+            for obj_info in objectInfo:
+                print("type of bbkox 0",type(obj_info[0]))
+                object_result = ObjectResult(
+                            job = job,
+                            bbox = obj_info[0].tolist(),
+                            object_class = obj_info[1],
+                            confidence_score = float(obj_info[2]),
+                            remarks = "",
+                        )
+                object_result.save()
+                unique_classes.add(obj_info[1])
+            
+            total_desired_images = 10
+            images_per_obj_name = total_desired_images // len(unique_classes)
+            for obj_name in unique_classes:
+                if obj_name != 'person' and PERFORM_RELATED:
+                    related_results = get_related(obj_name, job)
+                    related_results = related_results[:images_per_obj_name]
+                    full_related_results.extend(related_results)
+        response_data["related_results"] = full_related_results
+        print("full related:",full_related_results)
+        print("respone:",response_data)
+
+    if options['taskType'] == 'product':
+        unique_classes = set()
+        full_related_results = []
+        prodInfo = product_det(image_input_path, image_output_path, options['ConfidenceThreshold'], options['NmsThreshold'])
+        response_data = {
+                'message': 'Image analysis complete.',
+                'job_id':job.job_id,
+                'result': prodInfo,  
+            }
+        if not prodInfo:
+            prodResult = ProductResult(
+                        job=job,
+                        product_name=None,  # Default bbox values
+                        confidence_score=0.0,
+                        link="Null",
+                        remarks='No objects detected with the existing options',
+                    )
+            prodResult.save()
+        else:
+            for prod in prodInfo:
+                prodResult = ProductResult(
+                        job=job,
+                        product_name=prod[0],  # Default bbox values
+                        confidence_score=prod[1],
+                        link=prod[2],
+                        remarks=' ',
+                    )
+                prodResult.save()
+                unique_classes.add(prod[0])
+            
+            total_desired_images = 10
+            images_per_obj_name = total_desired_images // len(unique_classes)
+            for obj_name in unique_classes:
+                if obj_name != 'person' and PERFORM_RELATED:
+                    related_results = get_related(obj_name, job)
+                    related_results = related_results[:images_per_obj_name]
+                    full_related_results.extend(related_results)
+        response_data["related_results"] = full_related_results
     return response_data
 
 
