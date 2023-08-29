@@ -31,6 +31,8 @@ export default function Page() {
   const [objectOptions, setObjectOptions] = useState([]);
   const [analyseError, setAnalyseError] = useState('');
   const [selectedOption, setSelectedOption] = useState(null);
+  const [taskType, setTaskType] = useState('object');
+  const [doRelated, setDoRelated] = useState(false);
 
   const ssdObjectList = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'street sign', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'hat', 'backpack', 'umbrella', 'shoe', 'eye glasses', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'plate', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'mirror', 'dining table', 'window', 'desk', 'toilet', 'door', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'blender', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush', 'hair brush']
   const yolov7ObjectList = ['person', 'bicycle', 'car', 'motorcycle', 'airplane', 'bus', 'train', 'truck', 'boat', 'traffic light', 'fire hydrant', 'stop sign', 'parking meter', 'bench', 'bird', 'cat', 'dog', 'horse', 'sheep', 'cow', 'elephant', 'bear', 'zebra', 'giraffe', 'backpack', 'umbrella', 'handbag', 'tie', 'suitcase', 'frisbee', 'skis', 'snowboard', 'sports ball', 'kite', 'baseball bat', 'baseball glove', 'skateboard', 'surfboard', 'tennis racket', 'bottle', 'wine glass', 'cup', 'fork', 'knife', 'spoon', 'bowl', 'banana', 'apple', 'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake', 'chair', 'couch', 'potted plant', 'bed', 'dining table', 'toilet', 'tv', 'laptop', 'mouse', 'remote', 'keyboard', 'cell phone', 'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'book', 'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush']
@@ -87,7 +89,9 @@ export default function Page() {
     formPayload.append('nmsThreshold', formData.productConfThreshold);
     formPayload.append('model', formData.algorithm);
     formPayload.append('dataset', formData.dataset);
-  
+    formPayload.append('taskType', taskType);
+    formPayload.append('doRelated', doRelated);
+
     try {
       const response = await fetch('http://127.0.0.1:8000/analyze/', {
         method: 'POST',
@@ -125,13 +129,17 @@ export default function Page() {
     }
     return new Blob([ab], { type: mimeString });
   }
+
+  const toggleDoRelated = () => {
+    setDoRelated(prevDoRelated => !prevDoRelated);
+  };
   
   return (
     <>
       { authToken && <SidebarMenu />}
       <div className="flex flex-col justify-between">
         <Header />
-        <main className="container mb-auto mx-auto mt-28">
+        <main className="container mb-auto mx-auto mt-28 min-h-screen">
           { authToken ? (
             <form onSubmit={handleFormSubmit}>
               <div className="bg-gray-800 p-10 rounded-2xl text-center">
@@ -204,91 +212,201 @@ export default function Page() {
                 <h2 className="text-3xl font-semibold mb-4 text-gray-800">Settings</h2>
                   <div className="flex flex-row">
                     <div>
-                      <h4 className="text-lg font-bold text-gray-700">Algorithm:</h4>
-                      <h4 className="mt-10 text-lg font-bold text-gray-700">Dataset:</h4>
-                      <h4 className="mt-12 text-lg font-bold text-gray-700">Objects to Look For:</h4>
-                      <h4 className="mt-12 text-lg font-bold text-gray-700">Object Detector Confidence Threshold:</h4>
-                      <h4 className="mt-10 text-lg font-bold text-gray-700">Object Detector NMS Threshold:</h4>
+                      <h4 className="text-lg font-bold text-gray-700">Task Type:</h4>
+                      {taskType === 'object' && (
+                        <>
+                          <h4 className="mt-10 text-lg font-bold text-gray-700">Algorithm:</h4>
+                          <h4 className="mt-10 text-lg font-bold text-gray-700">Dataset:</h4>
+                          <h4 className="mt-12 text-lg font-bold text-gray-700">Objects to Look For:</h4>
+                          <h4 className="mt-12 text-lg font-bold text-gray-700">Object Detector Confidence Threshold:</h4>
+                          <h4 className="mt-10 text-lg font-bold text-gray-700">Object Detector NMS Threshold:</h4>
+                          <h4 className="mt-10 text-lg font-bold text-gray-700">Do Related:</h4>
+
+                        </>
+                      )}
+                      {taskType === 'product' && (
+                        <>
+                          <h4 className="mt-12 text-lg font-bold text-gray-700">Object Detector Confidence Threshold:</h4>
+                          <h4 className="mt-10 text-lg font-bold text-gray-700">Object Detector NMS Threshold:</h4>
+                          <h4 className="mt-10 text-lg font-bold text-gray-700">Do Related:</h4>
+                        </>
+                      )}
                     </div>
                     <div className="ml-12">
-                      {/* Algorithm */}
+                      {/* Task type */}
                       <div className="flex space-y-2">
                         <select
                           required
-                          className="form-select"
-                          name="algorithm"
-                          value={formData.algorithm}
-                          onChange={handleInputChange}
+                          name="taskType"
+                          value={taskType}
+                          onChange={(e) => setTaskType(e.target.value)}
+                          className="bg-gray-200 rounded p-1"
                         >
-                          <option value="">Select Algorithm</option>
-                          <option value="yolov7">YOLOV7</option>
-                          <option value="f_rcnn">Faster R-CNN</option>
-                          <option value="ssd">SSD</option>
+                          <option value="">Select Task Type</option>
+                          <option value="object">Object Detection</option>
+                          <option value="product">Product Detection</option>
                         </select>
                       </div>
+                      {taskType === 'object' && (
+                        <>
+                          {/* Algorithm */}
+                          <div className="mt-10 flex space-y-2">
+                            <select
+                              required
+                              className="form-select"
+                              name="algorithm"
+                              value={formData.algorithm}
+                              onChange={handleInputChange}
+                            >
+                              <option value="">Select Algorithm</option>
+                              <option value="yolov7">YOLOV7</option>
+                              <option value="f_rcnn">Faster R-CNN</option>
+                              <option value="ssd">SSD</option>
+                            </select>
+                          </div>
 
-                      {/* Dataset */}
-                      <div className="mt-10 flex space-y-2">
-                        <select
-                          required
-                          className="form-select"
-                          name="dataset"
-                          value={formData.dataset}
-                          onChange={handleInputChange}
-                        >
-                          <option value="">Select Dataset</option>
-                          {datasetOptions.map((dataset) => (
-                            <option key={dataset.value} value={dataset.value}>
-                              {dataset.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                          {/* Dataset */}
+                          <div className="mt-10 flex space-y-2">
+                            <select
+                              required
+                              className="form-select"
+                              name="dataset"
+                              value={formData.dataset}
+                              onChange={handleInputChange}
+                            >
+                              <option value="">Select Dataset</option>
+                              {datasetOptions.map((dataset) => (
+                                <option key={dataset.value} value={dataset.value}>
+                                  {dataset.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
 
-                      {/* Objects to Look For */}
-                      <div className="mt-12 flex space-y-2">
-                      <Select
-                        isMulti
-                        className=""
-                        components={animatedComponents}
-                        placeholder="Select objects"
-                        defaultValue={selectedOption}
-                        onChange={setSelectedOption}
-                        options={options}
-                      />
-                      </div>
-                      {/* Object Detector Confidence Threshold */}
-                      <div className="mt-12 flex space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="number"
-                            className="form-input w-16"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            name="objectConfThreshold"
-                            value={formData.objectConfThreshold}
-                            onChange={handleInputChange}
+                          {/* Objects to Look For */}
+                          <div className="mt-12 flex space-y-2">
+                          <Select
+                            isMulti
+                            className=""
+                            components={animatedComponents}
+                            placeholder="Select objects"
+                            defaultValue={selectedOption}
+                            onChange={setSelectedOption}
+                            options={options}
                           />
-                          <span className="text-gray-400">Enter values between 0 and 1</span>
-                        </div>
-                      </div>
-                      {/* Product Detector Confidence Threshold */}
-                      <div className="mt-10 mb-12 flex space-y-2">
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="number"
-                            className="form-input w-16"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            name="productConfThreshold"
-                            value={formData.productConfThreshold}
-                            onChange={handleInputChange}
-                          />
-                          <span className="text-gray-400">Enter values between 0 and 1</span>
-                        </div>
-                      </div>
+                          </div>
+                          {/* Object Detector Confidence Threshold */}
+                          <div className="mt-12 flex space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="number"
+                                className="form-input w-16"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                name="objectConfThreshold"
+                                value={formData.objectConfThreshold}
+                                onChange={handleInputChange}
+                              />
+                              <span className="text-gray-400">Enter values between 0 and 1</span>
+                            </div>
+                          </div>
+                          {/* Product Detector Confidence Threshold */}
+                          <div className="mt-10 mb-12 flex space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="number"
+                                className="form-input w-16"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                name="productConfThreshold"
+                                value={formData.productConfThreshold}
+                                onChange={handleInputChange}
+                              />
+                              <span className="text-gray-400">Enter values between 0 and 1</span>
+                            </div>
+                          </div>
+                          {/* Do related */}
+                          <div className="mt-10 mb-12 flex space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <div className="relative inline-block w-10 align-middle select-none">
+                                <input
+                                  type="checkbox"
+                                  name="doRelated"
+                                  id="doRelated"
+                                  className="absolute opacity-0 w-0 h-0"
+                                  checked={doRelated}
+                                  onChange={toggleDoRelated}
+                                />
+                                <label
+                                  htmlFor="doRelated"
+                                  className={`block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${
+                                    doRelated ? 'bg-purple-500' : 'bg-gray-400'
+                                  }`}
+                                ></label>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      {taskType === 'product' && (
+                        <>
+                          {/* Object Detector Confidence Threshold */}
+                          <div className="mt-10 flex space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="number"
+                                className="form-input w-16"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                name="objectConfThreshold"
+                                value={formData.objectConfThreshold}
+                                onChange={handleInputChange}
+                              />
+                              <span className="text-gray-400">Enter values between 0 and 1</span>
+                            </div>
+                          </div>
+                          {/* Product Detector Confidence Threshold */}
+                          <div className="mt-10 mb-12 flex space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="number"
+                                className="form-input w-16"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                name="productConfThreshold"
+                                value={formData.productConfThreshold}
+                                onChange={handleInputChange}
+                              />
+                              <span className="text-gray-400">Enter values between 0 and 1</span>
+                            </div>
+                          </div>
+                          {/* Do related */}
+                          <div className="mt-10 mb-12 flex space-y-2">
+                            <div className="flex items-center space-x-2">
+                              <div className="relative inline-block w-10 align-middle select-none">
+                                <input
+                                  type="checkbox"
+                                  name="doRelated"
+                                  id="doRelated"
+                                  className="absolute opacity-0 w-0 h-0"
+                                  checked={doRelated}
+                                  onChange={toggleDoRelated}
+                                />
+                                <label
+                                  htmlFor="doRelated"
+                                  className={`block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer ${
+                                    doRelated ? 'bg-purple-500' : 'bg-gray-400'
+                                  }`}
+                                ></label>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
               </div>
