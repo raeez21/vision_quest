@@ -26,6 +26,7 @@ from .utils import get_related, invoke_model, usage_analytics
 from datetime import datetime
 from urllib.parse import urljoin
 from rest_framework import generics
+import json
 
 # Add the root directory of the project to the Python path
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models')))
@@ -81,6 +82,7 @@ def analyze(request):
         if image_file:
             user_name = request.user.username
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            type = request.data.get("type")
             model = request.data.get('model')
             dataset = request.data.get('dataset')
             objects_str = request.data.get('objects', [])  # Get list of objects
@@ -88,8 +90,16 @@ def analyze(request):
             confThreshold_str = request.data.get('confThreshold')  # Get confThreshold
             confThreshold = float(confThreshold_str) if confThreshold_str else 0.5
             nmsThreshold_str = request.data.get('nmsThreshold')
-            nmsThreshold = float(nmsThreshold_str) if nmsThreshold_str else 0.5 
-            options = {'model':model,'dataset':dataset,'objects': objects, 'ConfidenceThreshold': confThreshold, 'NmsThreshold': nmsThreshold}
+            nmsThreshold = float(nmsThreshold_str) if nmsThreshold_str else 0.5
+            doProduct = request.data.get('doProduct')
+            productConf = None
+            productNms = None
+            if doProduct:
+                productConf = request.data.get('productConf')
+                productNms = request.data.get('productNms')
+
+            options = {'model':model,'dataset':dataset,'objects': objects, 'ConfidenceThreshold': confThreshold, \
+                      'NmsThreshold': nmsThreshold, 'doProduct': doProduct, 'productConf':productConf, 'productNms':productNms}
 
             #Save Media Model
             media = Media()
@@ -128,20 +138,52 @@ def dashboard(request):
     user = request.user
     media_entries = Media.objects.filter(job__user=user).order_by('-job__timestamp')
 
-    result_list = []
+    jobs_list = []
     for media_entry in media_entries:
         formatted_timestamp = media_entry.job.timestamp.strftime('%d-%m-%Y')
-        result_list.append({
+        jobs_list.append({
             " job_id": media_entry.job.job_id,
             "image_name": media_entry.image_name,
             "output_image_path": media_entry.output_image_path,
             "timestamp": formatted_timestamp,
         })
     analytics_data = usage_analytics(user)
+    result_dict = {
+        "jobs": jobs_list,
+        "analytics": {
+            "graph_data": analytics_data["graph_data"],
+            "jobs_performed": analytics_data["jobs_performed"],
+            "average_daily_jobs": analytics_data["average_daily_jobs"],
+            "max_jobs_in_day": analytics_data["max_jobs_in_day"]
+        }
+    }
+    json_data = json.dumps(result_dict, ensure_ascii=False)
+    print(json_data)
+    return JsonResponse(result_dict, json_dumps_params={'ensure_ascii': False})
+    return JsonResponse(json_data, safe=False, content_type='application/json')
     result_list.append(analytics_data)
     print("result LISt:",result_list)
     return JsonResponse(result_list, safe=False)
-
+    result_list = []
+    # for media_entry in media_entries:
+    #     formatted_timestamp = media_entry.job.timestamp.strftime('%d-%m-%Y')
+    #     result_list.append({
+    #         "job_id": media_entry.job.job_id,
+    #         "image_name": media_entry.image_name,
+    #         "output_image_path": media_entry.output_image_path,
+    #         "timestamp": formatted_timestamp,
+    #     })
+    # analytics_data = usage_analytics(user)
+    # result_list.append(analytics_data)
+    # # Convert the list of dictionaries to a single dictionary
+    # result_dict = {}
+    # for item in result_list:
+    #     result_dict.update(item)
+    #  # Convert the dictionary to JSON
+    # # json_data = json.dumps(result_dict)
+    
+    # # return JsonResponse(json_data, safe=False, content_type='application/json')
+    # return JsonResponse(result_dict, json_dumps_params={'ensure_ascii': False})
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])

@@ -120,7 +120,7 @@ def usage_analytics(user):
     graph_data = []
     for entry in jobs_daily_count:
         formatted_date = entry['date'].strftime('%d-%m-%Y')
-        graph_data.append([formatted_date, entry['count']])
+        graph_data.append({"date":formatted_date, "count":entry['count']})
 
     # Get usage analytics data
     jobs_performed = Jobs.objects.filter(user=user).count()
