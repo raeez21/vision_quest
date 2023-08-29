@@ -7,6 +7,7 @@ export const ObjectDetectorResults = ({ results }) => (
             <th className="px-4 py-2">Object Class</th>
             <th className="px-4 py-2">Confidence Score</th>
             <th className="px-4 py-2">Remarks</th>
+            <th className="px-4 py-2">Bounding boxes</th>
           </tr>
         </thead>
         <tbody>
@@ -15,6 +16,7 @@ export const ObjectDetectorResults = ({ results }) => (
               <td className="px-4 py-2">{result.object_class}</td>
               <td className="px-4 py-2">{result.confidence_score}</td>
               <td className="px-4 py-2">{result.remarks}</td>
+              <td className="px-4 py-2">{result.bbox.join(', ')}</td>
             </tr>
           ))}
         </tbody>
