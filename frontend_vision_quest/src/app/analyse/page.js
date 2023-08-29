@@ -82,7 +82,7 @@ export default function Page() {
       formPayload.append('image', formData.imageFile);
     }
     formPayload.append('type', 'image');
-    formPayload.append('objects', formattedSelectedObjects);
+    formPayload.append('objects', formattedSelectedObjects ? formattedSelectedObjects : '');
     formPayload.append('confThreshold', formData.objectConfThreshold);
     formPayload.append('nmsThreshold', formData.productConfThreshold);
     formPayload.append('model', formData.algorithm);
@@ -157,6 +157,13 @@ export default function Page() {
                           name="imageFile"
                           onChange={handleInputChange}
                         />
+                        {formData.imageFile && (
+                          <img 
+                            src={URL.createObjectURL(formData.imageFile)} 
+                            alt="Uploaded" 
+                            className="mt-2 object-contain max-h-32 mx-auto"
+                          />
+                        )}
                       </div>
                     )}
                   </div>
@@ -199,14 +206,15 @@ export default function Page() {
                     <div>
                       <h4 className="text-lg font-bold text-gray-700">Algorithm:</h4>
                       <h4 className="mt-10 text-lg font-bold text-gray-700">Dataset:</h4>
-                      <h4 className="mt-10 text-lg font-bold text-gray-700">Objects to Look For:</h4>
-                      <h4 className="mt-10 text-lg font-bold text-gray-700">Object Detector Confidence Threshold:</h4>
+                      <h4 className="mt-12 text-lg font-bold text-gray-700">Objects to Look For:</h4>
+                      <h4 className="mt-12 text-lg font-bold text-gray-700">Object Detector Confidence Threshold:</h4>
                       <h4 className="mt-10 text-lg font-bold text-gray-700">Object Detector NMS Threshold:</h4>
                     </div>
                     <div className="ml-12">
                       {/* Algorithm */}
                       <div className="flex space-y-2">
                         <select
+                          required
                           className="form-select"
                           name="algorithm"
                           value={formData.algorithm}
@@ -222,6 +230,7 @@ export default function Page() {
                       {/* Dataset */}
                       <div className="mt-10 flex space-y-2">
                         <select
+                          required
                           className="form-select"
                           name="dataset"
                           value={formData.dataset}
