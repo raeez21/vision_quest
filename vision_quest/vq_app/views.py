@@ -33,7 +33,7 @@ import json
 # def members(request):
 #     return HttpResponse("Hello world!")
 
-server_address = "http://127.0.0.1:8000"
+
 
 
 @api_view(['POST'])
