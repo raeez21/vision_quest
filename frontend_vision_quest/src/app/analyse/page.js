@@ -43,17 +43,35 @@ export default function Page() {
   const formattedSelectedObjects = selectedOption?.map(obj => obj.value).join(',');
 
   const handleCapture = () => {
-    setCameraActive(true)
-    
-    // Capture an image after 4 seconds
-    setTimeout(() => {
-      const imageSrc = webcamRef.current.getScreenshot();
-      const blob = dataURItoBlob(imageSrc)
-      const capturedFile = new File([blob], 'captured_image.jpg', { type: 'image/jpeg' });
-      setCapturedImage(capturedFile);
-      setCameraActive(false);
-    }, 5000)
-  };
+    if (taskType !== 'product' && (!formData.algorithm || !formData.dataset)) {
+      // Display message to select the required settings first.
+      alert('Please select the required settings first.');
+      return;
+    }
+  
+    // Ask for camera access
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(() => {
+        // Camera access granted, activate the camera
+        setCameraActive(true);
+  
+        // Capture an image after 4 seconds
+        setTimeout(async () => {
+          const imageSrc = webcamRef.current.getScreenshot();
+          const blob = dataURItoBlob(imageSrc);
+          const capturedFile = new File([blob], 'captured_image.jpg', { type: 'image/jpeg' });
+          setCapturedImage(capturedFile);
+          setCameraActive(false);
+  
+          // Call the analysis function after capturing the image
+          await handleFormSubmit(null, capturedFile);
+        }, 5000);
+      })
+      .catch((error) => {
+        // Handle camera access denied
+        console.error('Camera access error:', error);
+      });
+    };
   
   const handleInputChange = (e) => {
     const { name, value, type } = e.target;
@@ -75,13 +93,15 @@ export default function Page() {
     setFormData((prevData) => ({ ...prevData, [name]: newValue }));
   };
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
+  const handleFormSubmit = async (e,capturedFile) => {
+    if (e) {
+      e.preventDefault();
+    }
     setLoading(true);
 
     const formPayload = new FormData();
-    if (capturedImage) {
-      formPayload.append('image', capturedImage);
+    if (capturedFile) {
+      formPayload.append('image', capturedFile);
     } else if (formData.imageFile) {
       formPayload.append('image', formData.imageFile);
     }
@@ -198,7 +218,7 @@ export default function Page() {
                     </div>
                   )} */}
 
-                  {capturedImage && (
+                  {/* {capturedImage && (
                     <div className="mt-4 flex">
                       <img
                         src={capturedImage}
@@ -207,7 +227,7 @@ export default function Page() {
                         className=""
                       />
                     </div>
-                  )}
+                  )} */}
                 </div>
               </div>
 
@@ -215,11 +235,11 @@ export default function Page() {
                 <h2 className="text-3xl font-semibold mb-4 text-gray-800">Settings</h2>
                   <div className="flex flex-row">
                     <div>
-                      <h4 className="text-lg font-bold text-gray-700">Task Type:</h4>
+                      <h4 className="text-lg font-bold text-gray-700">Task Type:<span className="text-red-500 text-sm">*</span></h4>
                       {taskType === 'object' && (
                         <>
-                          <h4 className="mt-10 text-lg font-bold text-gray-700">Algorithm:</h4>
-                          <h4 className="mt-10 text-lg font-bold text-gray-700">Dataset:</h4>
+                          <h4 className="mt-10 text-lg font-bold text-gray-700">Algorithm:<span className="text-red-500 text-sm">*</span></h4>
+                          <h4 className="mt-10 text-lg font-bold text-gray-700">Dataset:<span className="text-red-500 text-sm">*</span></h4>
                           <h4 className="mt-12 text-lg font-bold text-gray-700">Objects to Look For:</h4>
                           <h4 className="mt-12 text-lg font-bold text-gray-700">Object Detector Confidence Threshold:</h4>
                           <h4 className="mt-10 text-lg font-bold text-gray-700">Object Detector NMS Threshold:</h4>
