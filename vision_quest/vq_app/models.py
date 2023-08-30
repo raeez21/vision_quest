@@ -37,7 +37,7 @@ class ObjectResult(models.Model):
 
 class ProductResult(models.Model):
     job = models.ForeignKey(Jobs, on_delete=models.CASCADE)
-    product_name = models.CharField(max_length=255)
+    product_name = models.CharField(max_length=255,null=True)
     confidence_score = models.FloatField()
     link = models.URLField()
     remarks = models.TextField()
