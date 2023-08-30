@@ -7,8 +7,8 @@ import { useAuth } from "../../../components/AuthContext";
 import { useEffect, useState } from "react";
 import NotLogedIn from "../../../components/NotLogedIn";
 import Link from "next/link";
-// import { useEffect, useRef } from "react";
-// import Chart from 'chart.js/auto';
+import "chart.js/auto";
+import { Doughnut, Line } from "react-chartjs-2";
 
 export default function Page() {
     const { authToken } = useAuth()
@@ -28,7 +28,7 @@ export default function Page() {
 
                 if (response.ok) {
                     const data = await response.json();
-                    setDashboardData(data.jobs);
+                    setDashboardData(data);
                 } else {
                     // Handle API error
                     console.log('Error fetching dashboard data:', response);
@@ -43,30 +43,34 @@ export default function Page() {
         fetchDashboardData();
     }, [authToken]);
 
-    // const chartRef = useRef(null);
-
-    // const usageData = {
-    //   labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-    //   datasets: [
-    //     {
-    //       label: 'Images Analyzed',
-    //       data: [12, 18, 10, 6, 9, 15, 20],
-    //       backgroundColor: 'rgba(75, 192, 192, 0.2)',
-    //       borderColor: 'rgba(75, 192, 192, 1)',
-    //       borderWidth: 1,
-    //     },
-    //   ],
-    // };
+    const dates = dashboardData?.analytics.graph_data.map(item => item.date);
+    const counts = dashboardData?.analytics.graph_data.map(item => item.count);
   
-    // useEffect(() => {
-    //   const ctx = chartRef.current.getContext('2d');
-  
-    //   new Chart(ctx, {
-    //     type: 'line',
-    //     data: usageData,
-    //   });
-    // }, []);
+    // Create the chart data
+    const chartData = {
+        labels: dates,
+        datasets: [
+            {
+            label: 'Count',
+            data: counts,
+            fill: false,
+            borderColor: 'rgba(75,192,192,1)',
+            backgroundColor: 'rgba(75,192,192,0.2)',
+            },
+        ],
+    };
 
+    const doughnutChartData = {
+        labels: ['Jobs Performed', 'Average Daily Jobs', 'Max Jobs in a Day'],
+        datasets: [
+            {
+                data: [dashboardData?.analytics.jobs_performed, dashboardData?.analytics.average_daily_jobs, dashboardData?.analytics.max_jobs_in_day],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+            },
+        ],
+    };
+    
     return (
       <>
         { authToken && <SidebarMenu />}
@@ -102,7 +106,7 @@ export default function Page() {
                                 <div className="flex flex-col items-start space-y-6">
                                     {/* <h3 className="text-2xl font-semibold mb-2">Last Week</h3> */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                                        {dashboardData?.map((item, index) => (
+                                        {dashboardData?.jobs.map((item, index) => (
                                             <Link
                                                 href={`/results/?job_id=${item[' job_id']}`}
                                                 key={index}
@@ -120,10 +124,19 @@ export default function Page() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="mb-8 mt-10">
+                            <div className="mb-8 mt-16">
                                 <h2 className="text-3xl font-semibold mb-4">Usage Analytics</h2>
-                                <div className="bg-white h-64 w-96 p-4 rounded-lg shadow-md">
-                                    {/* <canvas ref={chartRef} width={400} height={200}></canvas> */}
+                                <div className="container mx-auto p-4 flex flex-wrap">
+                                    <div className="w-full md:w-1/2 p-2">
+                                        <div className="bg-white rounded-lg shadow-md p-4">
+                                            <Line data={chartData} options={{ maintainAspectRatio: false }} />
+                                        </div>
+                                    </div>
+                                    <div className="w-full md:w-1/2 p-2">
+                                        <div className="bg-white rounded-lg shadow-md p-4">
+                                            <Doughnut data={doughnutChartData} options={{ maintainAspectRatio: false }} />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
