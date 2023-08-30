@@ -28,7 +28,7 @@ export default function Page() {
 
                 if (response.ok) {
                     const data = await response.json();
-                    setDashboardData(data);
+                    setDashboardData(data.jobs);
                 } else {
                     // Handle API error
                     console.log('Error fetching dashboard data:', response);

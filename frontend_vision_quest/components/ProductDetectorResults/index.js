@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export const ProductDetectorResults = ({ results }) => (
     <div className="p-6 border border-gray-300 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">Object Detector Results</h2>
@@ -14,11 +16,11 @@ export const ProductDetectorResults = ({ results }) => (
         <tbody>
           {results.map((result, index) => (
             <tr key={index}>
-              <td className="px-4 py-2">{result.productName}</td>
-              <td className="px-4 py-2">{result.confidence}</td>
+              <td className="px-4 py-2">{result.product_name}</td>
+              <td className="px-4 py-2">{result.confidence_score}</td>
               <td className="px-4 py-2">{result.brandName}</td>
               <td className="px-4 py-2">{result.pricing}</td>
-              <td className="px-4 py-2">{result.link}</td>
+              <td className="px-4 py-2"><Link href={result.link}target="_blank">{result.link}</Link></td>
             </tr>
           ))}
         </tbody>

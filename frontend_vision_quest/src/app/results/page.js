@@ -9,34 +9,7 @@ import { useAuth } from "../../../components/AuthContext";
 import NotLogedIn from "../../../components/NotLogedIn";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
-const imageDetails = {
-    name: 'image.jpg',
-    size: '2.5 MB',
-};
-  
-const objectDetectorResults = [
-    { object: 'Chair', confidence: 62, remarks: 'Particluar chair identified' },
-    { object: 'Spectacles', confidence: 70, remarks: '' },
-    { object: 'Human', confidence: 84, remarks: '' },
-    { object: 'Cup', confidence: 65, remarks: '' },
-    { object: 'Mouse', confidence: 73, remarks: '' },
-    { object: 'Running Shoes', confidence: 78, remarks: 'Shoes identified' },
-];
-
-const productDetectorResults = [
-    { productName: 'Product Name 1', confidence: 68, brandName: 'Ikea', pricing: '$159', link: 'ikea.com' },
-    { productName: 'Product Name 1', confidence: 55, brandName: '', pricing: '', link: '' },
-    { productName: 'Product Name 1', confidence: 77, brandName: 'Puma', pricing: '$50', link: 'puma.com' },
-];
-
-const relatedProducts = [
-    'image_url_1.jpg',
-    'image_url_2.jpg',
-    'image_url_3.jpg',
-    'image_url_4.jpg',
-    'image_url_5.jpg',
-];
+import Link from "next/link";
 
 export default function Page() {
     const { authToken } = useAuth()
@@ -44,6 +17,7 @@ export default function Page() {
     const job_id = router.get('job_id') 
 
     const [results, setResults] = useState([]);
+    console.log("results",results)
 
     useEffect(() => {
         if (job_id && authToken) {
@@ -97,23 +71,43 @@ export default function Page() {
                         </div>
                     </div>
                     <div className="flex justify-around mt-28">
-                        <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
-                            <ObjectDetectorResults results={results.object_results} />
-                        </div>
-                        <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
-                            <ProductDetectorResults results={productDetectorResults} />
-                        </div>
+                        {results.options?.taskType === 'object' && (
+                            <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
+                                <ObjectDetectorResults results={results.prediction_results} />
+                            </div>
+                        )}
+                        {results.options?.taskType === 'product' && (
+                            <div className="p-6 border bg-gray-400 rounded-lg shadow-md">
+                                <ProductDetectorResults results={results.prediction_results} />
+                            </div>
+                        )}
                     </div>
 
                     <div className="mb-14 mt-24">
                         <h2 className="text-3xl font-semibold mb-4">Related Products</h2>
                         <div className="flex space-x-4 justify-between mt-10">
-                            {relatedProducts.map((imageUrl, index) => (
+                            {results.related_results?.map((product, index) => (
                                 <div
                                     key={index}
-                                    className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                                    style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}
-                                ></div>
+                                    className="flex-none w-56 h-48 bg-gray-300 rounded-xl relative"
+                                >
+                                    <Link
+                                        href={product.link}
+                                        target="_blank"
+                                        className="absolute inset-0"
+                                    ></Link>
+                                    <div
+                                        className="h-full"
+                                        style={{
+                                            backgroundImage: `url(${product.image_link})`,
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                        }}
+                                    ></div>
+                                    <p className="absolute bottom-0 left-0 right-0 px-2 py-1 text-white bg-black bg-opacity-70 text-sm truncate">
+                                        {product.title}
+                                    </p>
+                                </div>
                             ))}
                         </div>
                     </div>
