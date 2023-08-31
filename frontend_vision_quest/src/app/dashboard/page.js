@@ -71,17 +71,19 @@ export default function Page() {
         ],
     };
     
+    const isNewUser = dashboardData?.jobs?.length === 0;
+
     return (
       <>
         { authToken && <SidebarMenu />}
         <div className="flex flex-col justify-between">
             <Header />
             { authToken ? (
-                <main className="container mb-auto mx-auto mt-28">
+                <main className="container mb-auto mx-auto mt-28 min-h-screen">
                     <h2 className="text-3xl font-semibold mb-4">Dashboard</h2>
                     <div className="mb-8">
                         <div className="flex flex-row justify-end items-center space-x-10">
-                            <span className="text-gray-700">Sort by:</span>
+                            <span className="">Sort by:</span>
                             <div>
                                 <label className="flex items-center space-x-2">
                                     <input type="radio" name="sort" value="date" className="form-radio" />
@@ -106,19 +108,31 @@ export default function Page() {
                                 <div className="flex flex-col items-start space-y-6">
                                     {/* <h3 className="text-2xl font-semibold mb-2">Last Week</h3> */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                                        {isNewUser && 
+                                            // Show dashboard skeleton for new users
+                                            <div className="p-6 rounded-md shadow-2xl bg-gray-800 opacity-90 hover:bg-gray-800 transition duration-300">
+                                                <h2 className="text-xl font-bold mb-4">Nothing to show here yet.</h2>
+                                                <h3 className="text-lg">
+                                                        Go to {' '}
+                                                    <Link href="/analyse" className="mr-2 font-bold leading-6 text-purple-700 opacity-80 hover:opacity-100 transition duration-300">
+                                                        analyse
+                                                    </Link>page!!.
+                                                </h3>
+                                            </div>
+                                        }
                                         {dashboardData?.jobs.map((item, index) => (
                                             <Link
                                                 href={`/results/?job_id=${item[' job_id']}`}
                                                 key={index}
-                                                className="flex flex-col items-center bg-white p-4 rounded-xl shadow-md"
+                                                className="flex flex-col items-center p-4 rounded-md shadow-2xl bg-gray-800 opacity-70 hover:opacity-100 hover:bg-gray-800 transition duration-300"
                                             >
                                                 <img
-                                                    className="flex-none w-48 h-32 md:w-56 md:h-48 bg-gray-300 rounded-xl mb-2"
+                                                    className="flex-none w-48 h-32 md:w-56 md:h-48 bg-gray-600 shadow-2xl rounded-md mb-2"
                                                     alt={item.image_name}
-                                                    src={`${item.output_image_path}`}
+                                                    src={item.output_image_path}
                                                 ></img>
-                                                <p className="mt-2 text-sm">Name: {item.image_name}</p>
-                                                <p className="text-sm">Timestamp: {item.timestamp}</p>
+                                                <p className="mt-2 text-sm font-semibold text-center">Name: {item.image_name}</p>
+                                                <p className="mt-1 text-sm">Timestamp: {item.timestamp}</p>
                                             </Link>
                                         ))}
                                     </div>
@@ -128,12 +142,12 @@ export default function Page() {
                                 <h2 className="text-3xl font-semibold mb-4">Usage Analytics</h2>
                                 <div className="container mx-auto p-4 flex flex-wrap">
                                     <div className="w-full md:w-1/2 p-2">
-                                        <div className="bg-white rounded-lg shadow-md p-4">
+                                        <div className="bg-white rounded-lg shadow-md p-4 opacity-80 hover:opacity-100 transition duration-300">
                                             <Line data={chartData} options={{ maintainAspectRatio: false }} />
                                         </div>
                                     </div>
                                     <div className="w-full md:w-1/2 p-2">
-                                        <div className="bg-white rounded-lg shadow-md p-4">
+                                        <div className="bg-white rounded-lg shadow-md p-4 opacity-80 hover:opacity-100 transition duration-300">
                                             <Doughnut data={doughnutChartData} options={{ maintainAspectRatio: false }} />
                                         </div>
                                     </div>
