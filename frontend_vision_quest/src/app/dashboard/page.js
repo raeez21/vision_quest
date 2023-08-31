@@ -112,7 +112,7 @@ export default function Page() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                         {isNewUser && 
                                             // Show dashboard skeleton for new users
-                                            <div className="p-6 rounded-md shadow-2xl bg-gray-800 opacity-90 hover:bg-gray-800 transition duration-300">
+                                            <div className="p-6 rounded-md shadow-2xl bg-gray-800 opacity-80 hover:opacity-100 transition duration-300">
                                                 <h2 className="text-xl font-bold mb-4">Nothing to show here yet.</h2>
                                                 <h3 className="text-lg">
                                                         Go to {' '}
