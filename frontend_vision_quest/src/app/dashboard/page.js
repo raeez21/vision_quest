@@ -101,7 +101,9 @@ export default function Page() {
                         </div>
                     </div>
                     {loading ? (
-                        <p>Loading...</p>
+                            <div className="flex items-center justify-center h-48">
+                                <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-700"></div>
+                            </div>
                         ) : (
                         <div className="mb-8">
                             <div className="flex justify-center items-center">
