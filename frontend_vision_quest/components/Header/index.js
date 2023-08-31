@@ -8,9 +8,16 @@ export default function Header() {
 
   return (
     <>
-      <header className="bg-gray-800 text-white py-4 fixed top-0 w-full">
+      <header className="bg-gray-800 text-white py-4 fixed top-0 w-full shadow-2xl z-10">
         <nav className="container mx-auto flex justify-between items-center">
-          <Link className="text-4xl font-bold text-gray-100 p-4" href="/">Vision Quest</Link>
+          <Link className="text-4xl font-bold text-gray-100 p-4 flex" href="/">
+            <img
+              src="https://i.ibb.co/MnHCzpJ/visionquest-logo.png" 
+              alt="Logo"
+              className="w-10 h-10 mr-4"
+            />
+            visionquest
+          </Link>
           {username ? (
             <Link href="/profile" className="flex items-center space-x-2">
             <p className="text-gray-400">Hello, </p>
