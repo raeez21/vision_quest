@@ -63,7 +63,7 @@ export default function SignIn() {
             src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
             alt="Vision Quest"
           />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight">
             Sign in to your account
           </h2>
         </div>
@@ -72,7 +72,7 @@ export default function SignIn() {
           <form className="space-y-6" action="#" method="POST" onSubmit={handleSubmit}>
             {loginError && <div className="text-red-500 mb-2">{loginError}</div>}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium leading-6 text-gray-900">
+              <label htmlFor="username" className="block text-sm font-bold leading-6">
                 Username
               </label>
               <div className="mt-2">
@@ -92,7 +92,7 @@ export default function SignIn() {
 
             <div>
               <div className="flex items-center justify-between">
-                <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
+                <label htmlFor="password" className="block text-sm font-bold leading-6">
                   Password
                 </label>
                 {/* <div className="text-sm">
