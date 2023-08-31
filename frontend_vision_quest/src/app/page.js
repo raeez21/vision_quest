@@ -40,7 +40,7 @@ export default function Page() {
             </div>
             <div className="flex-1 flex items-center justify-center">
               { authToken ?
-                (<Link href="/signin" className="font-semibold text-sm leading-7 shadow-md bg-gray-200 text-slate-700 px-4 py-2 rounded hover:bg-slate-500 hover:text-slate-300"
+                (<Link href="/analyse" className="font-semibold hover:font-normal text-sm leading-7 shadow-md px-4 py-2 rounded bg-white text-purple-700 hover:bg-purple-700 hover:text-white transition duration-500"
                 style={{
                   color: 'rgba(103, 6, 206, 1)',
                   backgroundColor: 'rgba(255, 255, 255, 1)'
@@ -48,11 +48,11 @@ export default function Page() {
               >
                   Analyse Now
                 </Link>) : 
-                (<Link href="/signin" className="font-semibold text-sm leading-7 shadow-md bg-gray-200 text-slate-700 px-4 py-2 rounded hover:bg-slate-500 hover:text-slate-300"
-                  style={{
-                    color: 'rgba(103, 6, 206, 1)',
-                    backgroundColor: 'rgba(255, 255, 255, 1)'
-                  }}
+                (<Link href="/signin" className="font-semibold hover:font-normal text-sm leading-7 shadow-md px-4 py-2 rounded bg-white text-purple-700 hover:bg-purple-700 hover:text-white transition duration-500"
+                  // style={{
+                  //   color: 'rgba(103, 6, 206, 1)',
+                  //   backgroundColor: 'rgba(255, 255, 255, 1)'
+                  // }}
                 >
                   Try Now
                 </Link>)}
