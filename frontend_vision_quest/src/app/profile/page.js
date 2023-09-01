@@ -61,9 +61,10 @@ function Profile() {
                 <Header />
                 { authToken ? (
                     <main className="container mb-auto mx-auto mt-28">
+                        <h2 className="text-4xl text-center font-bold p-10">Your Profile</h2>
                         <div className='flex justify-center'>
                             <div className="w-1/2 mr-5 p-6 rounded-md shadow-2xl bg-gray-800 opacity-100 transition duration-300">
-                                <h2 className="text-2xl font-bold mb-4">Your Profile</h2>
+                                <h2 className="text-2xl font-bold mb-4">Your Details</h2>
                                 <div className="text-white">
                                     <div className="mb-4">
                                         <span className="font-semibold text-gray-400">First Name:</span>{" "}
