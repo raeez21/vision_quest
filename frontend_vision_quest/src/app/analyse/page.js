@@ -210,7 +210,7 @@ export default function Page() {
                       <label htmlFor="fileInput" className="cursor-pointer">
                         <span className="mr-2 px-4 py-2 rounded shadow-md bg-white text-purple-700 hover:bg-purple-700 hover:text-white transition duration-300">
                           <FontAwesomeIcon icon={faUpload} className="mr-1" />
-                          Choose Image
+                          Upload
                         </span>
                         <input
                           id="fileInput"
@@ -227,7 +227,7 @@ export default function Page() {
                           onClick={handleCapture}
                         >
                           <FontAwesomeIcon icon={faCamera} className="mr-1" />
-                          Use Camera
+                          Webcam
                         </button>
                       {/* )} */}
                     </div>
