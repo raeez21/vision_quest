@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export const ProductDetectorResults = ({ results }) => (
     <div className="p-6 border border-gray-300 rounded-lg shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Object Detector Results</h2>
+      <h2 className="text-xl font-semibold mb-4">Nike Shoe Detection Results</h2>
       <table className="table-auto w-full">
         <thead>
           <tr>
