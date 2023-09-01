@@ -5,15 +5,28 @@ import Footer from "../../components/Footer";
 import Header from "../../components/Header";
 import { useAuth } from "../../components/AuthContext";
 import { SidebarMenu } from "../../components/SidebarMenu";
+import { Rating } from "@mui/material";
 
-
-const reviewImages = [
-  'image_url_1.jpg',
-  'image_url_2.jpg',
-  'image_url_3.jpg',
-  'image_url_4.jpg',
-  'image_url_5.jpg',
+const testimonials = [
+  {
+    rating: 4,
+    review:
+      "Vision Quest is an effortlessly accurate object detection app. Whether it's identifying everyday items or pinpointing Nike shoe models, its precision is simply outstanding!",
+    name: 'Alfie Solomons',
+  },
+  {
+    rating: 3,
+    review: 'Fast, accurate, and incredibly useful.',
+    name: 'Freddy Thorne',
+  },
+  {
+    rating: 3.5,
+    review:
+      "Its object detection capabilities are impressive, and the Nike shoe detector is spot on. As a sneaker enthusiast, I highly recommend this!!",
+    name: 'Ajay Jose',
+  },
 ];
+
 
 export default function Page() {
   const { authToken } = useAuth()
@@ -40,37 +53,57 @@ export default function Page() {
             </div>
             <div className="flex-1 flex items-center justify-center">
               { authToken ?
-                (<Link href="/signin" className="font-semibold text-sm leading-7 shadow-md bg-gray-200 text-slate-700 px-4 py-2 rounded hover:bg-slate-500 hover:text-slate-300"
-                style={{
-                  color: 'rgba(103, 6, 206, 1)',
-                  backgroundColor: 'rgba(255, 255, 255, 1)'
-                }}
+                (<Link href="/analyse" className="font-semibold hover:font-normal text-sm leading-7 shadow-md px-4 py-2 rounded bg-white text-purple-700 hover:bg-purple-700 hover:text-white transition duration-300"
+                // style={{
+                //   color: 'rgba(103, 6, 206, 1)',
+                //   backgroundColor: 'rgba(255, 255, 255, 1)'
+                // }}
               >
                   Analyse Now
                 </Link>) : 
-                (<Link href="/signin" className="font-semibold text-sm leading-7 shadow-md bg-gray-200 text-slate-700 px-4 py-2 rounded hover:bg-slate-500 hover:text-slate-300"
-                  style={{
-                    color: 'rgba(103, 6, 206, 1)',
-                    backgroundColor: 'rgba(255, 255, 255, 1)'
-                  }}
+                (<Link href="/signin" className="font-semibold hover:font-normal text-sm leading-7 shadow-md px-4 py-2 rounded bg-white text-purple-700 hover:bg-purple-700 hover:text-white transition duration-300"
+                  // style={{
+                  //   color: 'rgba(103, 6, 206, 1)',
+                  //   backgroundColor: 'rgba(255, 255, 255, 1)'
+                  // }}
                 >
                   Try Now
                 </Link>)}
             </div>
           </div>
-
-          <div className="mb-8">
-            <h2 className="text-3xl font-semibold mb-4">Reviews</h2>
-            <div className="flex space-x-4 justify-between">
-              {reviewImages.map((imageUrl, index) => (
-                <div
-                  key={index}
-                  className="flex-none w-56 h-48 bg-gray-300 rounded-xl"
-                  style={{ backgroundImage: `url(${imageUrl})`, backgroundSize: 'cover' }}
-                ></div>
-              ))}
+          <section 
+            className="mt-20 rounded-md shadow-2xl bg-gray-800 opacity-100 transition duration-300 p-12"
+            style={{
+                backgroundImage: 'linear-gradient(rgba(17,24,39,0.5), rgba(17,24,39,0.5)), url(https://app.roboflow.com/images/flow.png)',
+                // backgroundPosition: 'center',
+                backgroundSize: 'cover',
+                // backgroundRepeat: 'no-repeat',
+            }}
+          >
+            <div className="container mx-auto text-center">
+              <h2 className="text-3xl font-semibold mb-6 ">What Our Users Say!</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                {testimonials.map((testimonial, index) => (
+                  <div
+                    key={index}
+                    className="rounded-md flex flex-col justify-center text-center shadow-2xl p-6 opacity-70 hover:opacity-100  transition duration-300"
+                    style={{
+                      backgroundImage: 'url(https://app.roboflow.com/images/flow.png)',
+                      // backgroundPosition: 'center',
+                      // backgroundSize: 'cover',
+                      // backgroundRepeat: 'no-repeat',
+                  }}
+                  >
+                    <p className="text-gray-100 font-sans mb-4">" {testimonial.review} "</p>
+                    <div><Rating name="half-rating-read" value={testimonial.rating} readOnly /></div>
+                    <p className="text-purple-300 text-lg font-bold">
+                      - {testimonial.name}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </section>
 
         </main>
         <div className="z-10"><Footer /></div>

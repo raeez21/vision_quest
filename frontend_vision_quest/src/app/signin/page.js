@@ -60,7 +60,7 @@ export default function SignIn() {
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+            src="https://i.ibb.co/MnHCzpJ/visionquest-logo.png"
             alt="Vision Quest"
           />
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight">
@@ -119,16 +119,16 @@ export default function SignIn() {
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-gray-800 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="flex w-full justify-center rounded-md bg-white px-3 py-1.5 text-sm font-semibold leading-6 text-purple-700 shadow-sm hover:bg-purple-700 hover:text-white transition duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
                 Sign in
               </button>
             </div>
           </form>
 
-          <p className="mt-10 text-center text-sm text-gray-500">
+          <p className="mt-10 text-center text-sm text-gray-300">
           Need to create an account ?{' '}
-            <Link href="/signup" className="font-semibold leading-6 text-gray-800 hover:text-gray-400">
+            <Link href="/signup" className="font-semibold leading-6 text-purple-700 opacity-70 hover:opacity-100 transition duration-300">
               Sign up
             </Link>
           </p>

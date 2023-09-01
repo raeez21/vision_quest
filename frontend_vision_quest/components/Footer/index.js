@@ -4,10 +4,16 @@ export default function Footer() {
       <>
         <footer className="bg-gray-800 text-white py-4">
             <div className="container mx-auto flex justify-between items-center">
-                <div>
-                    <h2 className="text-4xl font-bold text-gray-400">Vision Quest</h2>
+                <div className="flex p-4 items-center">
+                    <img
+                        src="https://i.ibb.co/MnHCzpJ/visionquest-logo.png" 
+                        alt="Logo"
+                        className="w-6 h-6 mr-2"
+                    />
+                    <h2 className="text-2xl font-bold text-gray-100">visionquest</h2>
                 </div>
-                <div>
+                <p className="text-gray-500 text-sm">© 2023 visionquest. All rights reserved.</p>
+                {/* <div>
                     <p className="text-xl font-bold text-gray-400">Stay in touch! Join our Newsletter.</p>
                     <input
                         type="email"
@@ -17,7 +23,7 @@ export default function Footer() {
                     <button className="font-bold bg-slate-500 text-slate-900 px-4 py-2 rounded">
                         Subscribe
                     </button>
-                </div>
+                </div> */}
             </div>
         </footer>
       </>
