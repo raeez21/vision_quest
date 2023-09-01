@@ -80,8 +80,8 @@ export default function Page() {
             <Header />
             { authToken ? (
                 <main className="container mb-auto mx-auto mt-28 min-h-screen">
-                    <h2 className="text-3xl font-semibold mb-4">Dashboard</h2>
-                    <div className="mb-8">
+                    <h2 className="text-4xl font-semibold mt-5 mb-20 text-center">Dashboard</h2>
+                    {/* <div className="mb-8">
                         <div className="flex flex-row justify-end items-center space-x-10">
                             <span className="">Sort by:</span>
                             <div>
@@ -99,7 +99,7 @@ export default function Page() {
                                 </label>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     {loading ? (
                             <div className="flex items-center justify-center h-48">
                                 <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-700"></div>
@@ -141,7 +141,7 @@ export default function Page() {
                                 </div>
                             </div>
                             <div className="mb-8 mt-16">
-                                <h2 className="text-3xl font-semibold mb-4">Usage Analytics</h2>
+                                <h2 className="text-3xl font-semibold mb-4 text-center">Usage Analytics</h2>
                                 <div className="container mx-auto p-4 flex flex-wrap">
                                     <div className="w-full md:w-1/2 p-2">
                                         <div className="bg-white rounded-lg shadow-md p-4 opacity-80 hover:opacity-100 transition duration-300">
