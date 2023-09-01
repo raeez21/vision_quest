@@ -21,7 +21,7 @@ class RelatedProducts(models.Model):
     job = models.ForeignKey(Jobs, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     link = models.URLField()
-    image_link = models.URLField()
+    image_link = models.URLField(max_length=255)
 
     class Meta:
         db_table = "RelatedProducts"

@@ -169,7 +169,7 @@ def invoke_model(job, image_input_path, image_output_path, options):
                         product_name=None,  # Default bbox values
                         confidence_score=0.0,
                         link="Null",
-                        remarks='No objects detected with the existing options',
+                        remarks='No objects detected with current settings. Try changing the settings',
                     )
             prodResult.save()
         else:
@@ -196,7 +196,7 @@ def invoke_model(job, image_input_path, image_output_path, options):
 
 
 def usage_analytics(user):
-    jobs_daily_count = Jobs.objects.filter(user=user).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('job_id')).order_by('-date')
+    jobs_daily_count = Jobs.objects.filter(user=user).annotate(date=TruncDate('timestamp')).values('date').annotate(count=Count('job_id')).order_by('date')
     graph_data = []
     for entry in jobs_daily_count:
         formatted_date = entry['date'].strftime('%d-%m-%Y')
