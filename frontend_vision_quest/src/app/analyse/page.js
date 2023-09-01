@@ -12,6 +12,9 @@ import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCamera, faUpload } from '@fortawesome/free-solid-svg-icons';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import InfoIcon from '@mui/icons-material/Info';
 
 const animatedComponents = makeAnimated();
 
@@ -237,28 +240,77 @@ export default function Page() {
                   >
                     <h2 className="text-3xl font-semibold mb-4 ">Settings</h2>
                       <div className="flex flex-row">
-                        <div>
-                          <h4 className="text-lg font-bold">Task Type:<span className="text-red-500 text-sm">*</span></h4>
+                        <div className="text-right">
+                          <h4 className="text-lg font-bold">Task Type<span className="text-red-500 text-sm">*</span>:</h4>
                           {taskType === 'object' && (
                             <>
-                              <h4 className="mt-10 text-lg font-bold">Algorithm:<span className="text-red-500 text-sm">*</span></h4>
-                              <h4 className="mt-10 text-lg font-bold">Dataset:<span className="text-red-500 text-sm">*</span></h4>
-                              <h4 className="mt-12 text-lg font-bold">Objects to Look For:</h4>
-                              <h4 className="mt-12 text-lg font-bold">Object Detector Confidence Threshold:</h4>
-                              <h4 className="mt-10 text-lg font-bold">Object Detector NMS Threshold:</h4>
-                              <h4 className="mt-10 text-lg font-bold">Do Related product search?:</h4>
-
+                              <h4 className="mt-10 text-base font-bold">Algorithm<span className="text-red-500 text-sm">*</span>:</h4>
+                              <h4 className="mt-10 text-base font-bold">Dataset<span className="text-red-500 text-sm">*</span>:</h4>
+                              <h4 className="mt-16 text-base font-bold">Objects to Look For:</h4>
+                              <div className="flex mt-10 ">
+                                <Tooltip 
+                                    className="mb-2"
+                                    placement="top"
+                                    title="A value that determines how confident a model must be in its prediction before considering it valid. 
+                                      Higher values: only the most confident predictions being considered. 
+                                      Lower values: allow predictions with lower confidence scores to be included"
+                                  >
+                                    <IconButton size="small">
+                                      <InfoIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                <h4 className="text-base font-bold">Object Detector Confidence Threshold:</h4>
+                              </div>
+                              <div className="mt-10 flex justify-end">
+                                <Tooltip 
+                                    placement="top"
+                                    title="Refers to the level of overlap allowed between multiple object detection bounding boxes before non-maximum suppression (NMS) step eliminates redundant detections.
+                                            Higher values: fewer but more accurate predictions.
+                                            Lower values: more predictions, possibly overlapping"
+                                  >
+                                    <IconButton size="small">
+                                      <InfoIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                <h4 className="text-base font-bold">Object Detector NMS Threshold:</h4>
+                              </div>
+                              <h4 className="mt-10 text-base font-bold">Do Related product search?:</h4>
                             </>
                           )}
                           {taskType === 'product' && (
                             <>
-                              <h4 className="mt-12 text-lg font-bold">Object Detector Confidence Threshold:</h4>
-                              <h4 className="mt-10 text-lg font-bold">Object Detector NMS Threshold:</h4>
-                              <h4 className="mt-10 text-lg font-bold">Do Related product search?:</h4>
+                              <div className="flex mt-12 ">
+                                <Tooltip 
+                                    className="mb-2"
+                                    placement="top"
+                                    title="A value that determines how confident a model must be in its prediction before considering it valid. 
+                                      Higher values: only the most confident predictions being considered. 
+                                      Lower values: allow predictions with lower confidence scores to be included"
+                                  >
+                                    <IconButton size="small">
+                                      <InfoIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                <h4 className="text-base font-bold">Object Detector Confidence Threshold:</h4>
+                              </div>
+                              <div className="mt-10 flex justify-end">
+                                <Tooltip 
+                                    placement="top"
+                                    title="Refers to the level of overlap allowed between multiple object detection bounding boxes before non-maximum suppression (NMS) step eliminates redundant detections.
+                                            Higher values: fewer but more accurate predictions.
+                                            Lower values: more predictions, possibly overlapping"
+                                  >
+                                    <IconButton size="small">
+                                      <InfoIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                <h4 className="text-base font-bold">Object Detector NMS Threshold:</h4>
+                              </div>
+                              <h4 className="mt-10 text-base font-bold">Do Related product search?:</h4>
                             </>
                           )}
                         </div>
-                        <div className="ml-12">
+                        <div className="ml-10">
                           {/* Task type */}
                           <div className="flex space-y-2">
                             <select
@@ -383,7 +435,7 @@ export default function Page() {
                                 <div className="flex items-center space-x-2">
                                   <input
                                     type="number"
-                                    className="form-input w-16"
+                                    className="form-input w-16 bg-gray-600 rounded p-1"
                                     min="0"
                                     max="1"
                                     step="0.01"
@@ -399,7 +451,7 @@ export default function Page() {
                                 <div className="flex items-center space-x-2">
                                   <input
                                     type="number"
-                                    className="form-input w-16"
+                                    className="form-input w-16 bg-gray-600 rounded p-1"
                                     min="0"
                                     max="1"
                                     step="0.01"
@@ -437,6 +489,12 @@ export default function Page() {
                       </div>
                   </div>
                 </div>
+                {loading && 
+                  <div className="mt-10 text-center items-center flex flex-col justify-center">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-purple-700"></div>
+                    <p className="mt-8 text-xl font-sans font-semibold">Analysing...</p>
+                  </div>
+                }
                 {analyseError && <div className="text-red-500 text-center mt-10">{analyseError}</div>}
                 <div className="mt-10 text-center flex items-center justify-center">
                   <button 
