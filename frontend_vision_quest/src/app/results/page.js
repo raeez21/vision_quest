@@ -69,7 +69,7 @@ export default function Page() {
             <Header />
             { authToken ? (
                 <main className="container  mb-auto mx-auto min-h-screen mt-28">
-                    <h2 className="text-3xl font-semibold mb-4">Results</h2>
+                    <h2 className="text-4xl text-center font-semibold mb-10">Results</h2>
                     <div className="rounded-md shadow-2xl bg-gray-800 opacity-100 transition duration-300 p-10 text-center">
                         <div className="flex flex-row items-center justify-center">
                             <div className="flex flex-row justify-center">
@@ -124,7 +124,7 @@ export default function Page() {
                         </div>
                     </div>
                     <div className="mb-14 mt-24">
-                        <h2 className="text-3xl font-semibold mb-4">Related Products</h2>
+                        <h2 className="text-3xl font-semibold mb-4 text-center">Related Products</h2>
                         <div className="flex flex-wrap justify-between mt-10 space-y-4 md:space-y-0 md:space-x-4">
                             {results.related_results?.map((product, index) => (
                                 <div
