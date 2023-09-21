@@ -365,7 +365,7 @@ export default function Page() {
                               <div className="mt-12 flex space-y-2">
                               <Select
                                 isMulti
-                                className="bg-gray-600"
+                                className="text-gray-800"
                                 components={animatedComponents}
                                 placeholder="Select objects"
                                 defaultValue={selectedOption}
