@@ -27,6 +27,8 @@
    
    `python manage.py runserver`
 
+5. Now navigate to: http://localhost:3000/ to acess the Vision Quest app 
+
 If you find any issues, feel free to contact me on: mohammadraeez.mec@gmail.com
 
 
