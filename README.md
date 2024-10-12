@@ -1,5 +1,6 @@
 # vision_quest
 # This Readme file describes the installation steps for Vision Quest.
+# TODO: Dockerize and convert this into a proper project
 
 1. Clone the repository
  
